@@ -1,0 +1,87 @@
+---
+import Icon from "./Icon.astro";
+
+const languages = [
+  {
+    id: "html",
+    icon: "html5",
+    title: "HTML",
+    tagline: "Estructura el contenido de tus páginas web",
+    items: ["Etiquetas y elementos", "Estructura semántica", "Tablas, imágenes, formularios", "Ejercicios interactivos"],
+    iconBg: "bg-html",
+    cardBg: "bg-html-bg",
+    border: "border-html-bg-ring",
+    btn: "bg-html-btn hover:bg-html-btn/90",
+    btnText: "text-white",
+    href: "#html",
+  },
+  {
+    id: "css",
+    icon: "css3",
+    title: "CSS",
+    tagline: "Dale estilo y vida a tus ideas",
+    items: ["Selectores y propiedades", "Flexbox y Grid", "Diseño responsive", "Animaciones y más"],
+    iconBg: "bg-css",
+    cardBg: "bg-css-bg",
+    border: "border-css-bg-ring",
+    btn: "bg-css-btn hover:bg-css-btn/90",
+    btnText: "text-white",
+    href: "#css",
+  },
+  {
+    id: "js",
+    icon: "js",
+    title: "JavaScript",
+    tagline: "Haz que tus proyectos cobren vida",
+    items: ["Variables y funciones", "Manipulación del DOM", "Eventos e interactividad", "Proyectos prácticos"],
+    iconBg: "bg-js",
+    cardBg: "bg-js-bg",
+    border: "border-js-bg-ring",
+    btn: "bg-js-btn hover:bg-js-btn/90",
+    btnText: "text-js-ink",
+    href: "#javascript",
+  },
+] as const;
+---
+
+<section id="caminos" class="bg-paper py-24">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-2xl text-center">
+      <h2 class="text-3xl font-bold tracking-tight text-paper-ink sm:text-4xl">Elige tu camino</h2>
+      <p class="mt-3 text-base text-paper-ink-muted">
+        Domina las tecnologías fundamentales de la web de forma práctica y sencilla.
+      </p>
+    </div>
+
+    <div class="mt-14 grid gap-6 md:grid-cols-3">
+      {
+        languages.map((lang) => (
+          <div class={`flex flex-col rounded-2xl border ${lang.border} ${lang.cardBg} p-7`}>
+            <span class={`flex h-11 w-11 items-center justify-center rounded-xl ${lang.iconBg} text-white`}>
+              <Icon name={lang.icon} class="h-6 w-6" />
+            </span>
+            <h3 class="mt-5 text-xl font-bold text-paper-ink">{lang.title}</h3>
+            <p class="mt-1.5 text-sm text-paper-ink-muted">{lang.tagline}</p>
+
+            <ul class="mt-5 flex-1 space-y-2.5">
+              {lang.items.map((item) => (
+                <li class="flex items-center gap-2.5 text-sm text-paper-ink">
+                  <Icon name="check" class="h-4 w-4 shrink-0 text-emerald-600" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+
+            <a
+              href={lang.href}
+              class={`mt-7 flex items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold transition-transform hover:scale-[1.02] active:scale-[0.98] ${lang.btn} ${lang.btnText}`}
+            >
+              Explorar {lang.title}
+              <Icon name="arrow-right" class="h-4 w-4" />
+            </a>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

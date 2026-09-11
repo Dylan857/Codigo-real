@@ -1,0 +1,50 @@
+---
+import Icon from "./Icon.astro";
+
+const trustPoints = [
+  { icon: "bolt", label: "100% gratis" },
+  { icon: "devices", label: "Funciona en todos tus dispositivos" },
+  { icon: "check", label: "Sin registro" },
+] as const;
+---
+
+<div class="flex flex-col justify-center">
+  <h1 class="text-[2.75rem] font-extrabold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-[3.25rem]">
+    Tu primer paso al
+    <span class="block bg-gradient-to-r from-accent via-[#a78bfa] to-accent-2 bg-clip-text text-transparent">
+      desarrollo web
+    </span>
+  </h1>
+
+  <p class="mt-5 max-w-lg text-[17px] leading-relaxed text-ink-muted">
+    Explora HTML, CSS y JavaScript de forma interactiva. Escribe código, ve los resultados en tiempo
+    real y crea proyectos reales desde el primer día.
+  </p>
+
+  <div class="mt-8 flex flex-wrap items-center gap-3">
+    <a
+      href="#playground"
+      class="group flex items-center gap-2 rounded-xl bg-gradient-to-r from-accent to-accent-2 px-6 py-3 text-[15px] font-semibold text-white shadow-[0_1px_0_0_rgba(255,255,255,0.15)_inset] transition-transform hover:scale-[1.02] active:scale-[0.98]"
+    >
+      Comenzar a practicar
+      <Icon name="arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+    </a>
+    <a
+      href="#etiquetas"
+      class="rounded-xl border border-line-soft px-6 py-3 text-[15px] font-semibold text-ink transition-colors hover:border-line-soft hover:bg-surface"
+    >
+      Ver ejemplos
+    </a>
+  </div>
+
+  <div class="mt-9 flex flex-wrap gap-x-6 gap-y-3 text-sm text-ink-muted">
+    {
+      trustPoints.map((point) => (
+        <span class="flex items-center gap-2">
+          <Icon name={point.icon} class="h-4 w-4 text-accent-2" />
+          {point.label}
+        </span>
+      ))
+    }
+  </div>
+</div>

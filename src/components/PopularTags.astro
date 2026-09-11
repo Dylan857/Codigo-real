@@ -1,0 +1,40 @@
+---
+import Icon from "./Icon.astro";
+
+const tags = ["<h1>", "<p>", "<a>", "<img>", "<div>", "<span>", "<input>", "<button>", "<form>", "<table>", "<ul>", "<section>"];
+---
+
+<section id="etiquetas" class="bg-paper pb-24">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <h2 class="text-2xl font-bold tracking-tight text-paper-ink sm:text-[1.75rem]">
+          Explora por etiquetas populares
+        </h2>
+        <p class="mt-2 text-sm text-paper-ink-muted">
+          Aprende con ejemplos prácticos de las etiquetas más usadas.
+        </p>
+      </div>
+      <a
+        href="#"
+        class="flex shrink-0 items-center gap-1.5 text-sm font-semibold text-accent transition-colors hover:text-accent-2"
+      >
+        Ver todas las etiquetas
+        <Icon name="arrow-right" class="h-4 w-4" />
+      </a>
+    </div>
+
+    <div class="mt-8 flex flex-wrap gap-2.5">
+      {
+        tags.map((tag) => (
+          <a
+            href="#"
+            class="rounded-full border border-paper-line px-4 py-2 font-mono text-sm text-paper-ink transition-colors hover:border-accent hover:text-accent"
+          >
+            {tag}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>

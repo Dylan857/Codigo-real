@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-11T00:00:00Z",
+  "title": "Design System: Código Real",
+  "extensions": {
+    "colorMeta": {
+      "canvas": { "role": "neutral", "displayName": "Canvas Ink", "canonical": "#0b0f19", "tonalRamp": ["#0b0f19", "#10141f", "#161c29", "#1e2734", "#2a3341", "#8b93a7", "#e7eaf0", "#ffffff"] },
+      "accent": { "role": "primary", "displayName": "Indigo Accent", "canonical": "#6366f1", "tonalRamp": ["#2a2a72", "#3b3aa8", "#4f46d6", "#6366f1", "#8b5cf6", "#a78bfa", "#c4b5fd", "#ede9fe"] },
+      "accent-2": { "role": "primary", "displayName": "Violet Accent", "canonical": "#8b5cf6", "tonalRamp": ["#3b2a72", "#5b3aa8", "#7346d6", "#8b5cf6", "#a78bfa", "#c4b5fd", "#ddd6fe", "#ede9fe"] },
+      "paper": { "role": "neutral", "displayName": "Paper", "canonical": "#ffffff", "tonalRamp": ["#0f172a", "#55617a", "#94a3b8", "#e5e9f0", "#f8fafc", "#ffffff", "#ffffff", "#ffffff"] },
+      "html": { "role": "tertiary", "displayName": "HTML Orange", "canonical": "#e34f26", "tonalRamp": ["#7a2810", "#a63515", "#c9421c", "#e34f26", "#ea580c", "#f3d9c4", "#fbe6d5", "#fdeee6"] },
+      "css": { "role": "tertiary", "displayName": "CSS Blue", "canonical": "#2965b5", "tonalRamp": ["#123156", "#1a4986", "#2159a0", "#2965b5", "#2563eb", "#93b8e6", "#cfe0f7", "#e8f1fd"] },
+      "js": { "role": "tertiary", "displayName": "JS Yellow", "canonical": "#f0db4f", "tonalRamp": ["#2b2a17", "#5c5620", "#8a7e2a", "#c7ac36", "#eab308", "#f0db4f", "#f3e6a3", "#fdf6d9"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Hero Display", "purpose": "Hero H1 only, ends in the gradient accent span." },
+      "code": { "displayName": "Code / Mono", "purpose": "Monaco editor content and tag chips only." }
+    },
+    "shadows": [
+      { "name": "playground-ambient", "value": "shadow-2xl shadow-black/30 (Tailwind)", "purpose": "The single most important object per viewport; not used elsewhere." },
+      { "name": "cta-inset-highlight", "value": "0 1px 0 0 rgba(255,255,255,0.15) inset", "purpose": "Glossy top-edge catch on gradient CTA buttons." }
+    ],
+    "motion": [
+      { "name": "hover-scale", "value": "scale(1.02) hover / scale(0.98) active, transition-transform", "purpose": "The single reused hover pattern on all CTA buttons and language-card CTAs." },
+      { "name": "search-focus-expand", "value": "width transition on focus (w-48 -> focus:w-64)", "purpose": "Nav search field focus micro-interaction." },
+      { "name": "preview-debounce", "value": "setTimeout 250ms", "purpose": "Debounces Monaco model changes before re-rendering the live iframe preview." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Dominant CTA: indigo-to-violet gradient with white text, used once per section.",
+      "html": "<a href=\"#\" class=\"ds-btn-primary\">Comenzar a practicar</a>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(to right, #6366f1, #8b5cf6); color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 24px; border-radius: 12px; box-shadow: 0 1px 0 0 rgba(255,255,255,0.15) inset; transition: transform 0.15s ease; } .ds-btn-primary:hover { transform: scale(1.02); } .ds-btn-primary:active { transform: scale(0.98); } .ds-btn-primary:focus-visible { outline: 2px solid #8b5cf6; outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Lower-priority action: transparent with slate border.",
+      "html": "<a href=\"#\" class=\"ds-btn-secondary\">Ver ejemplos</a>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; background: transparent; color: #e7eaf0; border: 1px solid #2a3341; font-weight: 600; font-size: 15px; padding: 12px 24px; border-radius: 12px; transition: background 0.15s ease; } .ds-btn-secondary:hover { background: #10141f; } .ds-btn-secondary:focus-visible { outline: 2px solid #8b5cf6; outline-offset: 2px; }"
+    },
+    {
+      "name": "Language Ficha Card",
+      "kind": "card",
+      "refersTo": "language-card",
+      "description": "Flat pale-tinted card in the language's own brand color, used in the light middle section.",
+      "html": "<div class=\"ds-lang-card\"><span class=\"ds-lang-badge\">&lt;/&gt;</span><h3>HTML</h3><p>Estructura el contenido de tus páginas web</p><a href=\"#\" class=\"ds-lang-cta\">Explorar HTML</a></div>",
+      "css": ".ds-lang-card { display: flex; flex-direction: column; background: #fdeee6; border: 1px solid #f3d9c4; border-radius: 16px; padding: 28px; } .ds-lang-badge { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: #e34f26; color: #fff; } .ds-lang-card h3 { margin-top: 20px; font-weight: 700; font-size: 20px; color: #0f172a; } .ds-lang-card p { margin-top: 6px; font-size: 14px; color: #55617a; } .ds-lang-cta { margin-top: 28px; display: flex; align-items: center; justify-content: center; gap: 6px; background: #ea580c; color: #fff; font-weight: 600; font-size: 14px; padding: 10px 16px; border-radius: 12px; transition: transform 0.15s ease; } .ds-lang-cta:hover { transform: scale(1.02); }"
+    },
+    {
+      "name": "Tag Chip",
+      "kind": "chip",
+      "refersTo": "tag-chip",
+      "description": "Monospace pill for code-tag examples, on the paper section.",
+      "html": "<a href=\"#\" class=\"ds-tag-chip\">&lt;div&gt;</a>",
+      "css": ".ds-tag-chip { display: inline-flex; border: 1px solid #e5e9f0; border-radius: 9999px; padding: 8px 16px; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #0f172a; transition: color 0.15s ease, border-color 0.15s ease; } .ds-tag-chip:hover, .ds-tag-chip:focus-visible { border-color: #6366f1; color: #6366f1; }"
+    },
+    {
+      "name": "Search Input",
+      "kind": "input",
+      "refersTo": "nav-search",
+      "description": "Nav search field on the dark canvas, expands on focus.",
+      "html": "<input type=\"search\" class=\"ds-search-input\" placeholder=\"Buscar etiquetas, ejemplos...\" />",
+      "css": ".ds-search-input { width: 192px; background: #10141f; border: 1px solid #1e2734; border-radius: 12px; padding: 8px 12px 8px 36px; font-size: 14px; color: #e7eaf0; transition: width 0.15s ease, border-color 0.15s ease; } .ds-search-input::placeholder { color: #8b93a7; } .ds-search-input:focus { width: 256px; border-color: #8b5cf6; outline: none; }"
+    },
+    {
+      "name": "Nav Bar",
+      "kind": "nav",
+      "refersTo": "nav",
+      "description": "Sticky translucent-blurred dark header with logo badge, links, search, theme toggle, CTA.",
+      "html": "<header class=\"ds-nav\"><a class=\"ds-nav-logo\">&lt;/&gt; Código Real</a><nav class=\"ds-nav-links\"><a href=\"#\" class=\"active\">Inicio</a><a href=\"#\">HTML</a><a href=\"#\">CSS</a></nav></header>",
+      "css": ".ds-nav { position: sticky; top: 0; background: rgba(11,15,25,0.9); backdrop-filter: blur(8px); border-bottom: 1px solid #1e2734; padding: 14px 24px; display: flex; align-items: center; gap: 16px; } .ds-nav-logo { font-weight: 700; font-size: 15px; color: #e7eaf0; } .ds-nav-links { display: flex; gap: 24px; } .ds-nav-links a { font-size: 14px; font-weight: 500; color: #8b93a7; transition: color 0.15s ease; } .ds-nav-links a.active, .ds-nav-links a:hover { color: #e7eaf0; }"
+    },
+    {
+      "name": "Playground",
+      "kind": "custom",
+      "refersTo": "playground",
+      "description": "Signature component: real Monaco Editor (dark pane) beside a live iframe result (light pane), tabbed HTML/CSS/JS.",
+      "html": "<div class=\"ds-playground\"><div class=\"ds-pg-tabs\"><button class=\"ds-pg-tab active\">HTML</button><button class=\"ds-pg-tab\">CSS</button><button class=\"ds-pg-tab\">JS</button></div><div class=\"ds-pg-body\"><div class=\"ds-pg-editor\">// Monaco editor mounts here</div><div class=\"ds-pg-preview\">Resultado</div></div></div>",
+      "css": ".ds-playground { border-radius: 16px; border: 1px solid #1e2734; background: #10141f; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); } .ds-pg-tabs { display: flex; gap: 4px; padding: 8px 12px; background: #161c29; border-bottom: 1px solid #1e2734; } .ds-pg-tab { padding: 6px 12px; border-radius: 8px; font-size: 14px; font-weight: 500; color: #8b93a7; } .ds-pg-tab.active { background: #10141f; color: #e7eaf0; } .ds-pg-body { display: grid; grid-template-columns: 1fr 1fr; } .ds-pg-editor { background: #10141f; color: #e7eaf0; font-family: 'JetBrains Mono', monospace; min-height: 320px; padding: 16px; } .ds-pg-preview { background: #ffffff; color: #0f172a; min-height: 320px; padding: 16px; border-left: 1px solid #1e2734; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Real Tool, Dark Bookends",
+    "overview": "Código Real reads as a serious developer tool that happens to be a landing page, not a marketing page pretending to be a tool. The dominant register is a deep, solid-dark IDE canvas (#0b0f19) at the top (nav + hero + Playground) and bottom (CTA + footer), with a single light section in the middle (\"Elige tu camino\" / tags) that functions as a paper interlude between two dark bookends — a deliberate split confirmed by the shipped structure, not a stray inconsistency. There are no decorative gradients on the canvas itself: color is restrained to thin slate borders and one reused indigo→violet accent, spent only on the hero's headline span and primary CTA gradients. The Playground is the one place ornament gives way to function — it embeds the real Monaco Editor (VS Code's engine, loaded from CDN) with a live srcdoc iframe preview, so the product's central claim (\"this is a real editor, not a mockup\") is load-bearing to the visual system, not just copy. Language \"ficha\" cards break this restraint on purpose: each gets a flat, pale tint of its own language's brand color (HTML orange, CSS blue, JS yellow) as a full card background inside the light middle section — the one place the world intentionally turns colorful, echoing familiar language-brand hues rather than the site's own indigo accent.",
+    "keyCharacteristics": [
+      "Solid dark canvas at rest; no gradients, no glow, no glassmorphism.",
+      "One accent gradient (indigo → violet), spent only on gated moments: hero headline span, primary CTA buttons, primary icon badges.",
+      "A light \"paper\" section in the middle of an otherwise dark page, holding the three per-language ficha cards and the tag chips.",
+      "Soft rounded geometry throughout (rounded-xl/rounded-2xl); never sharp corners, never heavy shadows.",
+      "Hand-authored inline SVG icons only; no icon fonts, no emoji.",
+      "A real code editor (Monaco) and a real iframe preview are first-class visual citizens, not screenshots."
+    ],
+    "rules": [
+      { "name": "The One Gradient Rule", "body": "The indigo→violet gradient appears in exactly three roles across the page — hero headline span, primary CTA backgrounds, and small accent icon badges — never as a section background, never as a border, never repeated as a second competing gradient.", "section": "colors" },
+      { "name": "The Ficha Rule", "body": "A language's brand color (HTML/CSS/JS) is only ever used as a pale card tint plus a solid small icon badge and CTA button inside a language card. It never appears as the site's own accent, and the site's own accent never appears inside a ficha card.", "section": "colors" },
+      { "name": "The No-Kicker Rule", "body": "No small uppercase/eyebrow label sits above any heading anywhere on the built page (hero, section headers, CTA banner). Every H1/H2 carries its own weight without a kicker; do not add one to a future section.", "section": "typography" },
+      { "name": "The One-Face Rule", "body": "Inter is the only UI/display face; JetBrains Mono is the only monospace face. Do not introduce a third family for \"personality\" — the tool character comes from restraint, not from typographic variety.", "section": "typography" },
+      { "name": "The Border-Not-Shadow Rule", "body": "Depth between adjacent panels (nav, cards, Playground panes, footer) is conveyed with a 1px slate border, never a box-shadow. Reserve shadow for the single most important object on a given viewport.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do spend the indigo→violet accent only on the hero headline span, primary CTA gradients, and small icon badges — never as a section or card background.",
+      "Do use a 1px slate border to separate adjacent panels; reach for shadow-2xl only for the page's single most important object (the Playground).",
+      "Do keep language-brand colors (HTML/CSS/JS) confined to their own ficha cards and tab icons; never let them leak into the site's own accent role.",
+      "Do use JetBrains Mono only for literal code or code-like tokens (tag chips, the editor); Inter for everything else.",
+      "Do keep corners soft (rounded-lg to rounded-2xl); never introduce a sharp-cornered element."
+    ],
+    "donts": [
+      "Don't add a kicker/eyebrow label above any heading. None exists in the shipped build; the H1 and section H2s carry their own weight unassisted.",
+      "Don't introduce icon fonts, emoji, or third-party icon packages. Every icon is a hand-authored inline SVG in Icon.astro.",
+      "Don't add a second accent gradient or a second brand hue outside the indigo-violet pair and the three fixed language colors.",
+      "Don't apply drop shadows to cards or buttons for \"depth\"; the system conveys separation with borders, reserving shadow for the Playground alone."
+    ]
+  }
+}
