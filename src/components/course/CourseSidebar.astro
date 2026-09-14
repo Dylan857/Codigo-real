@@ -1,0 +1,191 @@
+---
+import Icon from "../Icon.astro";
+import { htmlModules, HTML_MODULE_COUNT, type CourseModule, type RealLesson } from "../../data/html-course";
+
+interface Props {
+  activeModuleSlug: string;
+  activeLessonSlug: string;
+}
+
+const { activeModuleSlug, activeLessonSlug } = Astro.props;
+---
+
+<aside class="lg:sticky lg:top-20 lg:self-start">
+  <div class="rounded-2xl border border-line bg-surface p-4">
+    <p class="text-sm font-semibold text-ink">Progreso en HTML</p>
+    <div class="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-surface-2">
+      <div id="html-progress-fill" class="h-full w-0 rounded-full bg-accent transition-[width]"></div>
+    </div>
+    <div class="mt-2 flex items-center justify-between text-xs text-ink-muted">
+      <span id="html-progress-label">0 de {HTML_MODULE_COUNT} módulos</span>
+      <span id="html-progress-percent" class="font-tabular font-semibold text-ink">0%</span>
+    </div>
+  </div>
+
+  <nav class="mt-4 rounded-2xl border border-line bg-surface p-2" aria-label="Módulos de HTML">
+    <ul class="flex flex-col">
+      {
+        htmlModules.map((mod: CourseModule, i: number) => {
+          const isActiveModule = mod.slug === activeModuleSlug;
+          return (
+            <li class="border-b border-line last:border-b-0">
+              <button
+                type="button"
+                class="course-module-toggle flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2.5 text-left transition-colors hover:bg-surface-2"
+                data-open={isActiveModule ? "true" : "false"}
+                aria-expanded={isActiveModule ? "true" : "false"}
+              >
+                <span
+                  class={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                    isActiveModule ? "bg-accent text-white" : "bg-surface-2 text-ink-muted"
+                  }`}
+                >
+                  {i + 1}
+                </span>
+                <span class={`flex-1 text-sm font-semibold ${isActiveModule ? "text-ink" : "text-ink-muted"}`}>
+                  {mod.title}
+                </span>
+                {!mod.hasContent && <Icon name="lock" class="h-3.5 w-3.5 shrink-0 text-ink-muted" />}
+                <Icon
+                  name="chevron-down"
+                  class={`course-module-chevron h-4 w-4 shrink-0 text-ink-muted transition-transform ${
+                    isActiveModule ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              <ul class={`course-module-panel flex flex-col gap-0.5 pb-2 pl-9 pr-2 ${isActiveModule ? "" : "hidden"}`}>
+                {mod.hasContent
+                  ? (mod.lessons as RealLesson[]).map((lesson) => {
+                      const isActiveLesson = isActiveModule && lesson.slug === activeLessonSlug;
+                      return (
+                        <li>
+                          <a
+                            href={`/html/${mod.slug}/${lesson.slug}`}
+                            data-lesson-key={`${mod.slug}/${lesson.slug}`}
+                            class={`course-lesson-link flex items-center gap-2 rounded-md px-2 py-1.5 text-[13px] transition-colors ${
+                              isActiveLesson
+                                ? "font-semibold text-accent"
+                                : "text-ink-muted hover:text-ink"
+                            }`}
+                          >
+                            <span class="course-lesson-dot relative flex h-3.5 w-3.5 shrink-0 items-center justify-center">
+                              <span
+                                class={`course-lesson-dot-idle h-1.5 w-1.5 rounded-full ${
+                                  isActiveLesson ? "bg-accent" : "bg-ink-muted/50"
+                                }`}
+                              />
+                              <Icon name="check" class="course-lesson-dot-done hidden h-3.5 w-3.5 text-emerald-600" />
+                            </span>
+                            {lesson.title}
+                          </a>
+                        </li>
+                      );
+                    })
+                  : mod.lessons.map((lesson) => (
+                      <li class="flex items-center gap-2 rounded-md px-2 py-1.5 text-[13px] text-ink-muted/70">
+                        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-ink-muted/30" />
+                        <span class="flex-1">{lesson.title}</span>
+                        <span class="rounded-full bg-surface-2 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-ink-muted">
+                          Pronto
+                        </span>
+                      </li>
+                    ))}
+              </ul>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </nav>
+
+  <div class="mt-4 rounded-2xl border border-line-soft bg-canvas p-5">
+    <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-accent-2 text-white">
+      <Icon name="rocket" class="h-4.5 w-4.5" />
+    </span>
+    <p class="mt-3 text-sm font-semibold text-ink">¿Listo para un reto?</p>
+    <p class="mt-1 text-xs text-ink-muted">Pon en práctica lo aprendido con ejercicios interactivos.</p>
+    <a
+      href="#ejercicios"
+      class="mt-4 flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-r from-accent to-accent-2 px-4 py-2 text-xs font-semibold text-white transition-transform hover:scale-[1.02] active:scale-[0.98]"
+    >
+      Ver ejercicios
+      <Icon name="arrow-right" class="h-3.5 w-3.5" />
+    </a>
+  </div>
+</aside>
+
+<script>
+  document.addEventListener("astro:page-load", function () {
+    var STORAGE_KEY = "codigo-real-html-progress";
+
+    function readCompleted() {
+      try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function updateProgress() {
+      var completed = readCompleted();
+      var lessonLinks = Array.prototype.slice.call(document.querySelectorAll(".course-lesson-link"));
+
+      lessonLinks.forEach(function (link) {
+        var key = link.getAttribute("data-lesson-key");
+        var idle = link.querySelector(".course-lesson-dot-idle");
+        var done = link.querySelector(".course-lesson-dot-done");
+        if (key && completed.indexOf(key) !== -1) {
+          if (idle) idle.classList.add("hidden");
+          if (done) done.classList.remove("hidden");
+        }
+      });
+
+      var modulesBySlug = {};
+      lessonLinks.forEach(function (link) {
+        var key = link.getAttribute("data-lesson-key") || "";
+        var moduleSlug = key.split("/")[0];
+        if (!modulesBySlug[moduleSlug]) modulesBySlug[moduleSlug] = [];
+        modulesBySlug[moduleSlug].push(key);
+      });
+
+      var completedModules = 0;
+      Object.keys(modulesBySlug).forEach(function (moduleSlug) {
+        var keys = modulesBySlug[moduleSlug];
+        var allDone = keys.every(function (k) {
+          return completed.indexOf(k) !== -1;
+        });
+        if (allDone) completedModules += 1;
+      });
+
+      var fill = document.getElementById("html-progress-fill");
+      var label = document.getElementById("html-progress-label");
+      var percent = document.getElementById("html-progress-percent");
+      var pct = Math.round((completedModules / 10) * 100);
+      if (fill instanceof HTMLElement) fill.style.width = pct + "%";
+      if (label) label.textContent = completedModules + " de 10 módulos";
+      if (percent) percent.textContent = pct + "%";
+    }
+
+    updateProgress();
+    if (window.__crSidebarProgressHandler) {
+      window.removeEventListener("codigo-real:progress-updated", window.__crSidebarProgressHandler);
+    }
+    window.__crSidebarProgressHandler = updateProgress;
+    window.addEventListener("codigo-real:progress-updated", updateProgress);
+
+    var toggles = Array.prototype.slice.call(document.querySelectorAll(".course-module-toggle"));
+    toggles.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var panel = btn.nextElementSibling;
+        var chevron = btn.querySelector(".course-module-chevron");
+        var isOpen = btn.getAttribute("data-open") === "true";
+        btn.setAttribute("data-open", String(!isOpen));
+        btn.setAttribute("aria-expanded", String(!isOpen));
+        if (panel) panel.classList.toggle("hidden");
+        if (chevron) chevron.classList.toggle("rotate-180");
+      });
+    });
+  });
+</script>

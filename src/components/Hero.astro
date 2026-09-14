@@ -8,7 +8,7 @@ const trustPoints = [
 ] as const;
 ---
 
-<div class="flex flex-col justify-center">
+<div class="mx-auto flex max-w-2xl flex-col items-center text-center">
   <h1 class="text-[2.75rem] font-extrabold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-[3.25rem]">
     Tu primer paso al
     <span class="block bg-gradient-to-r from-accent via-[#a78bfa] to-accent-2 bg-clip-text text-transparent">
@@ -21,7 +21,7 @@ const trustPoints = [
     real y crea proyectos reales desde el primer día.
   </p>
 
-  <div class="mt-8 flex flex-wrap items-center gap-3">
+  <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
     <a
       href="#playground"
       class="group flex items-center gap-2 rounded-xl bg-gradient-to-r from-accent to-accent-2 px-6 py-3 text-[15px] font-semibold text-white shadow-[0_1px_0_0_rgba(255,255,255,0.15)_inset] transition-transform hover:scale-[1.02] active:scale-[0.98]"
@@ -37,7 +37,7 @@ const trustPoints = [
     </a>
   </div>
 
-  <div class="mt-9 flex flex-wrap gap-x-6 gap-y-3 text-sm text-ink-muted">
+  <div class="mt-9 flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm text-ink-muted">
     {
       trustPoints.map((point) => (
         <span class="flex items-center gap-2">

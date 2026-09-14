@@ -1,5 +1,7 @@
 ---
+import { ClientRouter } from "astro:transitions";
 import Icon from "../components/Icon.astro";
+import { FIRST_HTML_LESSON_PATH } from "../data/html-course";
 import "../styles/global.css";
 
 interface Props {
@@ -13,13 +15,23 @@ const {
 } = Astro.props;
 
 const navLinks = [
-  { label: "Inicio", href: "#inicio" },
-  { label: "HTML", href: "#html" },
-  { label: "CSS", href: "#css" },
-  { label: "JavaScript", href: "#javascript" },
-  { label: "Ejercicios", href: "#ejercicios" },
-  { label: "Blog", href: "#blog" },
+  { label: "Inicio", href: "/" },
+  { label: "HTML", href: FIRST_HTML_LESSON_PATH, activeMatch: "/html" },
+  { label: "CSS", href: "/#css" },
+  { label: "JavaScript", href: "/#javascript" },
+  { label: "Ejercicios", href: "/#ejercicios" },
+  { label: "Blog", href: "/#blog" },
 ];
+
+const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
+
+function isNavLinkActive(link: { href: string; activeMatch?: string }) {
+  const path = (link.activeMatch ?? link.href).split("#")[0] || "/";
+  if (path === "/") {
+    return currentPath === "/";
+  }
+  return currentPath === path || currentPath.startsWith(`${path}/`);
+}
 
 const footerColumns = [
   {
@@ -62,16 +74,61 @@ const year = new Date().getFullYear();
 
     <script is:inline>
       (function () {
-        try {
-          var stored = localStorage.getItem("codigo-real-theme");
-          var theme = stored === "light" ? "light" : "dark";
-          document.documentElement.setAttribute("data-theme", theme);
-        } catch (e) {}
+        function readTheme() {
+          try {
+            var stored = localStorage.getItem("codigo-real-theme");
+            return stored === "light" ? "light" : "dark";
+          } catch (e) {
+            return "dark";
+          }
+        }
+        document.documentElement.setAttribute("data-theme", readTheme());
+        document.addEventListener("astro:before-preparation", function () {
+          var bar = document.getElementById("route-progress");
+          if (bar) bar.classList.add("is-active");
+        });
+        document.addEventListener("astro:before-swap", function (event) {
+          event.newDocument.documentElement.setAttribute("data-theme", readTheme());
+
+          var monacoColors = document.head.querySelector("style.monaco-colors");
+          if (monacoColors) {
+            window.__crMonacoColorsCSS = monacoColors.textContent;
+          }
+          var monacoCssLink = document.head.querySelector('link[rel="stylesheet"][href*="monaco-editor"]');
+          if (monacoCssLink) {
+            window.__crMonacoCssHref = monacoCssLink.getAttribute("href");
+          }
+        });
+        document.addEventListener("astro:page-load", function () {
+          var bar = document.getElementById("route-progress");
+          if (bar) bar.classList.remove("is-active");
+
+          if (window.__crMonacoColorsCSS && !document.head.querySelector("style.monaco-colors")) {
+            var style = document.createElement("style");
+            style.className = "monaco-colors";
+            style.textContent = window.__crMonacoColorsCSS;
+            document.head.appendChild(style);
+          }
+          if (
+            window.__crMonacoCssHref &&
+            !document.head.querySelector('link[rel="stylesheet"][href*="monaco-editor"]')
+          ) {
+            var link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = window.__crMonacoCssHref;
+            document.head.appendChild(link);
+          }
+        });
       })();
     </script>
+
+    <ClientRouter />
   </head>
   <body class="bg-canvas text-ink">
+    <div id="route-progress" class="pointer-events-none fixed left-0 top-0 z-[60] h-[3px] w-2/5 bg-accent-2 opacity-0" aria-hidden="true"></div>
+
     <header
+      transition:name="site-header"
       class="sticky top-0 z-50 border-b border-line bg-canvas/90 backdrop-blur supports-[backdrop-filter]:bg-canvas/75"
     >
       <div class="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3.5 sm:px-6 lg:px-8">
@@ -90,11 +147,12 @@ const year = new Date().getFullYear();
 
         <nav class="hidden items-center gap-6 pl-2 lg:flex">
           {
-            navLinks.map((link, i) => (
+            navLinks.map((link) => (
               <a
                 href={link.href}
+                aria-current={isNavLinkActive(link) ? "page" : undefined}
                 class={`text-sm font-medium transition-colors ${
-                  i === 0 ? "text-ink" : "text-ink-muted hover:text-ink"
+                  isNavLinkActive(link) ? "text-ink" : "text-ink-muted hover:text-ink"
                 }`}
               >
                 {link.label}
@@ -179,12 +237,13 @@ const year = new Date().getFullYear();
         </label>
         <ul class="mt-3 flex flex-col divide-y divide-line sm:mt-0">
           {
-            navLinks.map((link, i) => (
+            navLinks.map((link) => (
               <li>
                 <a
                   href={link.href}
+                  aria-current={isNavLinkActive(link) ? "page" : undefined}
                   class={`block py-3 text-[15px] font-medium ${
-                    i === 0 ? "text-ink" : "text-ink-muted"
+                    isNavLinkActive(link) ? "text-ink" : "text-ink-muted"
                   }`}
                 >
                   {link.label}
@@ -268,7 +327,7 @@ const year = new Date().getFullYear();
     </footer>
 
     <script is:inline>
-      (function () {
+      document.addEventListener("astro:page-load", function () {
         var btn = document.getElementById("theme-toggle");
         if (!btn) return;
         btn.addEventListener("click", function () {
@@ -281,11 +340,11 @@ const year = new Date().getFullYear();
           } catch (e) {}
           window.dispatchEvent(new CustomEvent("codigo-real:theme-change", { detail: { theme: next } }));
         });
-      })();
+      });
     </script>
 
     <script is:inline>
-      (function () {
+      document.addEventListener("astro:page-load", function () {
         var toggle = document.getElementById("mobile-menu-toggle");
         var menu = document.getElementById("mobile-menu");
         if (!toggle || !menu) return;
@@ -300,9 +359,32 @@ const year = new Date().getFullYear();
             toggle.setAttribute("aria-expanded", "false");
           });
         });
-      })();
+      });
     </script>
 
     <slot name="scripts" />
+
+    <style>
+      #route-progress.is-active {
+        opacity: 1;
+        animation: route-progress-sweep 900ms ease-in-out infinite;
+      }
+      @keyframes route-progress-sweep {
+        0% {
+          transform: translateX(-100%);
+        }
+        100% {
+          transform: translateX(350%);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #route-progress.is-active {
+          animation: none;
+          opacity: 0.6;
+          width: 100%;
+          transform: none;
+        }
+      }
+    </style>
   </body>
 </html>

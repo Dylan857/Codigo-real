@@ -111,7 +111,7 @@ Language "ficha" cards break this restraint on purpose: each gets a flat, pale t
 - One accent gradient (indigo → violet), spent only on gated moments: hero headline span, primary CTA buttons, primary icon badges.
 - A light "paper" section in the middle of an otherwise dark page, holding the three per-language ficha cards and the tag chips.
 - Soft rounded geometry throughout (`rounded-xl`/`rounded-2xl`); never sharp corners, never heavy shadows.
-- Hand-authored inline SVG icons only; no icon fonts, no emoji.
+- Hand-authored inline SVG icons only; no icon fonts, no emoji. **Exception:** the HTML5 icon (`Icon.astro`, `name="html5"`) is the official raster HTML5 shield logo (`public/images/html5-logo.png`) instead of a hand-drawn SVG, shown at its native colors with no `bg-html` badge behind it — CSS and JS keep their hand-drawn SVGs with a solid-color badge.
 - A real code editor (Monaco) and a real iframe preview are first-class visual citizens, not screenshots.
 
 ## Colors
@@ -128,7 +128,7 @@ The palette is Restrained: a near-black slate world carries almost everything, o
 - **Ink / Ink Muted** (`#e7eaf0` / `#8b93a7`): primary and secondary text on dark surfaces.
 
 ### Neutral (light register — "paper")
-- **Paper / Paper Muted** (`#ffffff` / `#f8fafc`): the light middle section (LanguageGrid, PopularTags) and the Playground's own result pane, which stays light even though the editor pane beside it is dark.
+- **Paper / Paper Muted** (`#ffffff` / `#f8fafc`): the light middle section (LanguageGrid, PopularTags) and the Playground's own result pane, which stays light even though the editor pane beside it is dark. This is the full extent of the fixed-light "paper" register — the HTML course pages (`/html/*`) are NOT part of it: their sidebar, lesson text, and cards use the theme-reactive `canvas`/`surface`/`ink`/`line` tokens like the rest of the site, so the dark/light toggle applies there too. The course's four callout card types (Consejo, Reto rápido, Error común, Dato extra/Siguiente paso) additionally use a `dark:` variant (registered via `@custom-variant dark` in `global.css`, keyed off the same `data-theme` attribute) to re-tint their raw sky/emerald/red/accent colors for the dark register instead of staying pale.
 - **Paper Ink / Paper Ink Muted** (`#0f172a` / `#55617a`): text on paper surfaces.
 - **Paper Line** (`#e5e9f0`): borders on paper surfaces (tag chips, result-pane dividers).
 
@@ -138,7 +138,7 @@ The palette is Restrained: a near-black slate world carries almost everything, o
 - **JS Yellow** (icon `#f0db4f`, card tint `#fdf6d9`, button `#eab308`, ink `#2b2a17`): the JS card and tab icon; JS is the only "ficha" whose button text is dark ink instead of white, because yellow fails contrast with white text.
 
 ### Named Rules
-**The One Gradient Rule.** The indigo→violet gradient appears in exactly three roles across the page — hero headline span, primary CTA backgrounds, and small accent icon badges — never as a section background, never as a border, never repeated as a second competing gradient.
+**The One Gradient Rule.** The indigo→violet gradient appears in exactly three roles across the page — hero headline span, primary CTA backgrounds, and small accent icon badges — never as a section background, never as a border, never repeated as a second competing gradient. This is scoped to the accent hue specifically: a neutral `from-canvas to-transparent` fade used to blend a photo into the dark canvas (e.g. the HTML course hero's cover photo) carries no accent color and is not a second gradient under this rule.
 
 **The Ficha Rule.** A language's brand color (HTML/CSS/JS) is only ever used as a pale card tint plus a solid small icon badge and CTA button inside a language card. It never appears as the site's own accent, and the site's own accent never appears inside a ficha card.
 
@@ -164,7 +164,7 @@ The palette is Restrained: a near-black slate world carries almost everything, o
 
 ## Layout
 
-The page is a single-column stack of full-bleed sections, each centered on a `max-w-7xl` container with `px-4 sm:px-6 lg:px-8` gutters. The first-viewport hero section is the only two-column layout (`lg:grid-cols-2`, `gap-10`–`14`): Hero copy on the left, the full Playground module on the right, collapsing to a single stacked column below `lg`. Section vertical rhythm runs large — `py-16` to `py-24` (`96px` at desktop) between major sections (LanguageGrid, PopularTags, CtaBanner), with tighter internal card padding (`p-7`/`p-8`/`p-10`). The language grid is `md:grid-cols-3`, collapsing to one column on mobile. The sticky top nav (`sticky top-0 z-50`) uses a translucent, blurred canvas background (`bg-canvas/90 backdrop-blur`) so page content is visible scrolling underneath it. Below `lg`, navigation links move into a full-width slide-down mobile menu toggled by a hamburger button.
+The page is a single-column stack of full-bleed sections, each centered on a `max-w-7xl` container with `px-4 sm:px-6 lg:px-8` gutters. The first-viewport hero section follows the same single-column pattern as every other section: centered Hero copy (title, subhead, CTAs, trust points, width-capped at `max-w-2xl`) sits on top, and the full Playground module spans the entire container width below it — the Playground is the one place a two-column split still appears, but internally (editor pane left, live-preview pane right, `lg:grid-cols-2`), not at the page-section level. Section vertical rhythm runs large — `py-16` to `py-24` (`96px` at desktop) between major sections (LanguageGrid, PopularTags, CtaBanner), with tighter internal card padding (`p-7`/`p-8`/`p-10`). The language grid is `md:grid-cols-3`, collapsing to one column on mobile. The sticky top nav (`sticky top-0 z-50`) uses a translucent, blurred canvas background (`bg-canvas/90 backdrop-blur`) so page content is visible scrolling underneath it. Below `lg`, navigation links move into a full-width slide-down mobile menu toggled by a hamburger button.
 
 ## Elevation & Depth
 

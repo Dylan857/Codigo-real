@@ -44,7 +44,7 @@ const tabs = [
 
   <div class="grid lg:grid-cols-2">
     <div class="relative border-b border-line lg:border-b-0 lg:border-r">
-      <div id="editor-container" class="h-[320px] sm:h-[360px] lg:h-[420px]"></div>
+      <div id="editor-container" class="h-[380px] sm:h-[440px] lg:h-[560px]"></div>
       <div
         id="editor-loading"
         class="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 bg-surface text-sm text-ink-muted"
@@ -58,8 +58,8 @@ const tabs = [
       <div class="flex items-center justify-between border-b border-paper-line px-4 py-2.5">
         <span class="text-xs font-semibold uppercase tracking-wide text-paper-ink-muted">Resultado:</span>
       </div>
-      <div class="relative h-[280px] w-full flex-1 sm:h-[320px] lg:h-[370px]">
-        <iframe id="preview-window" title="Resultado en vivo" class="h-full w-full bg-white" sandbox="allow-scripts"
+      <div class="relative h-[380px] w-full flex-1 sm:h-[440px] lg:h-[560px]">
+        <iframe id="preview-window" title="Resultado en vivo" class="h-full w-full bg-white" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms allow-modals"
         ></iframe>
         <div
           id="preview-loading"
@@ -105,7 +105,24 @@ const tabs = [
 ></script>
 
 <script is:inline>
-  (function () {
+  document.addEventListener("astro:page-load", function () {
+    if (window.__crPlaygroundEditor) {
+      try {
+        window.__crPlaygroundEditor.dispose();
+      } catch (e) {}
+      window.__crPlaygroundEditor = null;
+    }
+    if (window.__crPlaygroundModels) {
+      Object.keys(window.__crPlaygroundModels).forEach(function (lang) {
+        try {
+          window.__crPlaygroundModels[lang].dispose();
+        } catch (e) {}
+      });
+      window.__crPlaygroundModels = null;
+    }
+
+    if (!document.getElementById("playground")) return;
+
     var DEFAULTS = {
       html:
         '<!DOCTYPE html>\n<html lang="es">\n<head>\n  <meta charset="UTF-8">\n  <title>Mi primera página</title>\n</head>\n<body>\n  <h1>¡Hola mundo!</h1>\n  <p>Estoy aprendiendo desarrollo web en Código Real.</p>\n</body>\n</html>\n',
@@ -208,12 +225,16 @@ const tabs = [
       });
     }
 
-    window.addEventListener("codigo-real:theme-change", function (event) {
+    if (window.__crPlaygroundTheme) {
+      window.removeEventListener("codigo-real:theme-change", window.__crPlaygroundTheme);
+    }
+    window.__crPlaygroundTheme = function (event) {
       if (window.monaco && editor) {
         var theme = event.detail && event.detail.theme === "light" ? "vs" : "vs-dark";
         window.monaco.editor.setTheme(theme);
       }
-    });
+    };
+    window.addEventListener("codigo-real:theme-change", window.__crPlaygroundTheme);
 
     function bootMonaco() {
       if (!window.require) {
@@ -251,15 +272,14 @@ const tabs = [
           models[lang].onDidChangeContent(scheduleRender);
         });
 
+        window.__crPlaygroundEditor = editor;
+        window.__crPlaygroundModels = models;
+
         if (loadingEl) loadingEl.remove();
         renderPreview();
       });
     }
 
-    if (document.readyState === "complete") {
-      bootMonaco();
-    } else {
-      window.addEventListener("load", bootMonaco);
-    }
-  })();
+    bootMonaco();
+  });
 </script>

@@ -1,5 +1,6 @@
 ---
 import Icon from "./Icon.astro";
+import { FIRST_HTML_LESSON_PATH } from "../data/html-course";
 
 const languages = [
   {
@@ -13,7 +14,7 @@ const languages = [
     border: "border-html-bg-ring",
     btn: "bg-html-btn hover:bg-html-btn/90",
     btnText: "text-white",
-    href: "#html",
+    href: FIRST_HTML_LESSON_PATH,
   },
   {
     id: "css",
@@ -57,9 +58,15 @@ const languages = [
       {
         languages.map((lang) => (
           <div class={`flex flex-col rounded-2xl border ${lang.border} ${lang.cardBg} p-7`}>
-            <span class={`flex h-11 w-11 items-center justify-center rounded-xl ${lang.iconBg} text-white`}>
-              <Icon name={lang.icon} class="h-6 w-6" />
-            </span>
+            {
+              lang.icon === "html5" ? (
+                <Icon name="html5" class="h-11 w-11 shrink-0" />
+              ) : (
+                <span class={`flex h-11 w-11 items-center justify-center rounded-xl ${lang.iconBg} text-white`}>
+                  <Icon name={lang.icon} class="h-6 w-6" />
+                </span>
+              )
+            }
             <h3 class="mt-5 text-xl font-bold text-paper-ink">{lang.title}</h3>
             <p class="mt-1.5 text-sm text-paper-ink-muted">{lang.tagline}</p>
 

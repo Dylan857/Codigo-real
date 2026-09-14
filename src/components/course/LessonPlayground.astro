@@ -1,0 +1,174 @@
+---
+import Icon from "../Icon.astro";
+
+interface Props {
+  id: string;
+  initialCode: string;
+}
+
+const { id, initialCode } = Astro.props;
+---
+
+<div
+  id={id}
+  data-initial-code={initialCode}
+  class="lesson-playground overflow-hidden rounded-2xl border border-line bg-surface shadow-2xl shadow-black/30"
+>
+  <div class="flex items-center justify-between gap-3 border-b border-line bg-surface-2 px-3 py-2">
+    <div class="flex items-center gap-1.5 rounded-lg bg-surface px-3 py-1.5 text-sm font-medium text-ink">
+      <Icon name="html5" class="h-3.5 w-3.5 text-html" />
+      HTML
+    </div>
+    <button
+      type="button"
+      class="lesson-playground-reset flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-ink-muted transition-colors hover:text-ink"
+    >
+      <Icon name="refresh" class="h-3.5 w-3.5" />
+      Limpiar
+    </button>
+  </div>
+
+  <div class="grid lg:grid-cols-2">
+    <div class="relative border-b border-line lg:border-b-0 lg:border-r">
+      <div class="lesson-editor-container h-[300px] sm:h-[340px]"></div>
+      <div
+        class="lesson-editor-loading pointer-events-none absolute inset-0 flex items-center justify-center gap-2 bg-surface text-sm text-ink-muted"
+      >
+        <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-accent-2"></span>
+        Cargando editor...
+      </div>
+    </div>
+
+    <div class="flex flex-col bg-paper">
+      <div class="flex items-center justify-between border-b border-paper-line px-4 py-2.5">
+        <span class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-paper-ink-muted">
+          <span class="h-1.5 w-1.5 rounded-full bg-html"></span>
+          Resultado
+        </span>
+      </div>
+      <div class="relative h-[260px] w-full flex-1 sm:h-[300px]">
+        <iframe class="lesson-preview-window h-full w-full bg-white" title="Resultado en vivo" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms allow-modals"
+        ></iframe>
+        <div
+          class="lesson-preview-loading pointer-events-none absolute inset-0 flex items-center justify-center gap-2 bg-white text-sm text-paper-ink-muted"
+        >
+          <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-accent"></span>
+          Preparando resultado...
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"
+></script>
+
+<script>
+  document.addEventListener("astro:page-load", function () {
+    var roots = Array.prototype.slice.call(document.querySelectorAll(".lesson-playground"));
+
+    (window.__crLessonThemeListeners || []).forEach(function (fn) {
+      window.removeEventListener("codigo-real:theme-change", fn);
+    });
+    window.__crLessonThemeListeners = [];
+
+    (window.__crLessonPlaygroundInstances || []).forEach(function (instance) {
+      try {
+        instance.editor.dispose();
+      } catch (e) {}
+      try {
+        instance.model.dispose();
+      } catch (e) {}
+    });
+    window.__crLessonPlaygroundInstances = [];
+
+    roots.forEach(function (root) {
+      var initialCode = root.getAttribute("data-initial-code") || "";
+      var editor = null;
+      var model = null;
+      var updateTimer = null;
+
+      var editorContainer = root.querySelector(".lesson-editor-container");
+      var loadingEl = root.querySelector(".lesson-editor-loading");
+      var previewFrame = root.querySelector(".lesson-preview-window");
+      var previewLoadingEl = root.querySelector(".lesson-preview-loading");
+      var resetBtn = root.querySelector(".lesson-playground-reset");
+
+      function renderPreview() {
+        if (!previewFrame || !model) return;
+        previewFrame.srcdoc = model.getValue();
+        if (previewLoadingEl) {
+          previewLoadingEl.remove();
+          previewLoadingEl = null;
+        }
+      }
+
+      function scheduleRender() {
+        window.clearTimeout(updateTimer);
+        updateTimer = window.setTimeout(renderPreview, 250);
+      }
+
+      if (resetBtn) {
+        resetBtn.addEventListener("click", function () {
+          if (model) model.setValue(initialCode);
+          renderPreview();
+        });
+      }
+
+      root.addEventListener("codigo-real:load-challenge", function (event) {
+        var code = event.detail && event.detail.code;
+        if (model && typeof code === "string") {
+          model.setValue(code);
+          renderPreview();
+        }
+      });
+
+      function handleThemeChange(event) {
+        if (window.monaco && editor) {
+          var theme = event.detail && event.detail.theme === "light" ? "vs" : "vs-dark";
+          window.monaco.editor.setTheme(theme);
+        }
+      }
+      window.__crLessonThemeListeners.push(handleThemeChange);
+      window.addEventListener("codigo-real:theme-change", handleThemeChange);
+
+      function bootMonaco() {
+        if (!window.require || !editorContainer) {
+          if (loadingEl) loadingEl.textContent = "No se pudo cargar el editor.";
+          return;
+        }
+
+        window.require.config({
+          paths: { vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs" },
+        });
+
+        window.require(["vs/editor/editor.main"], function () {
+          var monaco = window.monaco;
+          var currentTheme = document.documentElement.getAttribute("data-theme") === "light" ? "vs" : "vs-dark";
+
+          model = monaco.editor.createModel(initialCode, "html");
+
+          editor = monaco.editor.create(editorContainer, {
+            model: model,
+            theme: currentTheme,
+            automaticLayout: true,
+            minimap: { enabled: false },
+            fontSize: 14,
+            lineHeight: 22,
+            padding: { top: 16 },
+            scrollBeyondLastLine: false,
+            smoothScrolling: true,
+          });
+
+          model.onDidChangeContent(scheduleRender);
+          window.__crLessonPlaygroundInstances.push({ editor: editor, model: model });
+
+          if (loadingEl) loadingEl.remove();
+          renderPreview();
+        });
+      }
+
+      bootMonaco();
+    });
+  });
+</script>

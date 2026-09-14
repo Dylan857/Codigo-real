@@ -1,0 +1,36 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import CourseHero from "../../../components/course/CourseHero.astro";
+import CourseSidebar from "../../../components/course/CourseSidebar.astro";
+import LessonContent from "../../../components/course/LessonContent.astro";
+import { getAllRealLessonParams, getRealLessonBySlug } from "../../../data/html-course";
+
+export function getStaticPaths() {
+  return getAllRealLessonParams().map((params) => ({ params }));
+}
+
+const { module: moduleSlug, lesson: lessonSlug } = Astro.params;
+const found = getRealLessonBySlug(moduleSlug as string, lessonSlug as string);
+
+if (!found) {
+  return Astro.redirect("/html");
+}
+
+const { module: mod, lesson, prevLesson, nextLesson } = found;
+---
+
+<BaseLayout
+  title={`${lesson.title} — Curso de HTML — Código Real`}
+  description={lesson.summary}
+>
+  <CourseHero />
+
+  <section class="bg-canvas">
+    <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <div class="grid gap-8 lg:grid-cols-[260px_1fr]">
+        <CourseSidebar activeModuleSlug={mod.slug} activeLessonSlug={lesson.slug} />
+        <LessonContent module={mod} lesson={lesson} prevLesson={prevLesson} nextLesson={nextLesson} />
+      </div>
+    </div>
+  </section>
+</BaseLayout>

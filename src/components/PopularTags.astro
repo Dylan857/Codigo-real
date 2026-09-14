@@ -1,7 +1,11 @@
 ---
 import Icon from "./Icon.astro";
+import { FIRST_HTML_LESSON_PATH } from "../data/html-course";
 
-const tags = ["<h1>", "<p>", "<a>", "<img>", "<div>", "<span>", "<input>", "<button>", "<form>", "<table>", "<ul>", "<section>"];
+// TODO: once each tag has its own lesson, point `href` at that tag's specific module/lesson.
+const tags = ["<h1>", "<p>", "<a>", "<img>", "<div>", "<span>", "<input>", "<button>", "<form>", "<table>", "<ul>", "<section>"].map(
+  (label) => ({ label, href: FIRST_HTML_LESSON_PATH })
+);
 ---
 
 <section id="etiquetas" class="bg-paper pb-24">
@@ -16,7 +20,7 @@ const tags = ["<h1>", "<p>", "<a>", "<img>", "<div>", "<span>", "<input>", "<but
         </p>
       </div>
       <a
-        href="#"
+        href={FIRST_HTML_LESSON_PATH}
         class="flex shrink-0 items-center gap-1.5 text-sm font-semibold text-accent transition-colors hover:text-accent-2"
       >
         Ver todas las etiquetas
@@ -28,10 +32,10 @@ const tags = ["<h1>", "<p>", "<a>", "<img>", "<div>", "<span>", "<input>", "<but
       {
         tags.map((tag) => (
           <a
-            href="#"
+            href={tag.href}
             class="rounded-full border border-paper-line px-4 py-2 font-mono text-sm text-paper-ink transition-colors hover:border-accent hover:text-accent"
           >
-            {tag}
+            {tag.label}
           </a>
         ))
       }
