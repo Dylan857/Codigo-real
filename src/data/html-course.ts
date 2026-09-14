@@ -1,28 +1,6 @@
-export interface RealLesson {
-  slug: string;
-  title: string;
-  summary: string;
-  playgroundCode: string;
-  hint: string;
-  explanationIntro: string;
-  explanationRows: { code: string; desc: string }[];
-  tip: string;
-  extra: string;
-  commonError: string;
-  nextStepText: string;
-  challenge: { description: string; code: string };
-}
+import type { RealLesson, LessonStub, CourseModule, AdjacentLesson } from "./course-types";
 
-export interface LessonStub {
-  title: string;
-}
-
-export interface CourseModule {
-  slug: string;
-  title: string;
-  lessons: RealLesson[] | LessonStub[];
-  hasContent: boolean;
-}
+export type { RealLesson, LessonStub, CourseModule, AdjacentLesson };
 
 export const HTML_MODULE_COUNT = 10;
 
@@ -843,8 +821,6 @@ export const htmlModules: CourseModule[] = [
     lessons: proyectoFinalLessons,
   },
 ];
-
-export type AdjacentLesson = RealLesson & { moduleSlug: string };
 
 export function getRealLessonBySlug(moduleSlug: string, lessonSlug: string) {
   const moduleIndex = htmlModules.findIndex((m) => m.slug === moduleSlug && m.hasContent);

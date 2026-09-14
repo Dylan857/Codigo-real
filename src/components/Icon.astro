@@ -1,33 +1,37 @@
 ---
+export type IconName =
+  | "logo-mark"
+  | "search"
+  | "sun"
+  | "moon"
+  | "coffee"
+  | "arrow-right"
+  | "external-link"
+  | "refresh"
+  | "check"
+  | "rocket"
+  | "github"
+  | "youtube"
+  | "twitter"
+  | "linkedin"
+  | "heart"
+  | "html5"
+  | "css3"
+  | "css3-logo"
+  | "js"
+  | "js-logo"
+  | "bolt"
+  | "devices"
+  | "chevron-right"
+  | "chevron-down"
+  | "book"
+  | "lightbulb"
+  | "alert-triangle"
+  | "pencil"
+  | "lock";
+
 interface Props {
-  name:
-    | "logo-mark"
-    | "search"
-    | "sun"
-    | "moon"
-    | "coffee"
-    | "arrow-right"
-    | "external-link"
-    | "refresh"
-    | "check"
-    | "rocket"
-    | "github"
-    | "youtube"
-    | "twitter"
-    | "linkedin"
-    | "heart"
-    | "html5"
-    | "css3"
-    | "js"
-    | "bolt"
-    | "devices"
-    | "chevron-right"
-    | "chevron-down"
-    | "book"
-    | "lightbulb"
-    | "alert-triangle"
-    | "pencil"
-    | "lock";
+  name: IconName;
   class?: string;
 }
 
@@ -173,6 +177,12 @@ const { name, class: className = "" } = Astro.props;
 }
 {
   name === "html5" && <img src="/images/html5-logo.png" alt="HTML5" class={`object-contain ${className}`} />
+}
+{
+  name === "css3-logo" && <img src="/images/css3-logo.png" alt="CSS3" class={`object-contain ${className}`} />
+}
+{
+  name === "js-logo" && <img src="/images/js-logo.png" alt="JavaScript" class={`object-contain ${className}`} />
 }
 {
   name === "chevron-down" && (

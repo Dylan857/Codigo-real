@@ -1,31 +1,46 @@
 ---
 import Icon from "../Icon.astro";
-import { htmlModules, HTML_MODULE_COUNT, type CourseModule, type RealLesson } from "../../data/html-course";
+import type { CourseModule, RealLesson } from "../../data/course-types";
 
 interface Props {
+  modules: CourseModule[];
+  moduleCount: number;
+  basePath: string;
+  storageKey: string;
+  progressLabel: string;
+  ariaLabel: string;
   activeModuleSlug: string;
   activeLessonSlug: string;
 }
 
-const { activeModuleSlug, activeLessonSlug } = Astro.props;
+const {
+  modules,
+  moduleCount,
+  basePath,
+  storageKey,
+  progressLabel,
+  ariaLabel,
+  activeModuleSlug,
+  activeLessonSlug,
+} = Astro.props;
 ---
 
-<aside class="lg:sticky lg:top-20 lg:self-start">
+<aside class="lg:sticky lg:top-20 lg:self-start" data-storage-key={storageKey} data-module-count={moduleCount}>
   <div class="rounded-2xl border border-line bg-surface p-4">
-    <p class="text-sm font-semibold text-ink">Progreso en HTML</p>
+    <p class="text-sm font-semibold text-ink">{progressLabel}</p>
     <div class="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-surface-2">
-      <div id="html-progress-fill" class="h-full w-0 rounded-full bg-accent transition-[width]"></div>
+      <div class="course-progress-fill h-full w-0 rounded-full bg-accent transition-[width]"></div>
     </div>
     <div class="mt-2 flex items-center justify-between text-xs text-ink-muted">
-      <span id="html-progress-label">0 de {HTML_MODULE_COUNT} módulos</span>
-      <span id="html-progress-percent" class="font-tabular font-semibold text-ink">0%</span>
+      <span class="course-progress-label">0 de {moduleCount} módulos</span>
+      <span class="course-progress-percent font-tabular font-semibold text-ink">0%</span>
     </div>
   </div>
 
-  <nav class="mt-4 rounded-2xl border border-line bg-surface p-2" aria-label="Módulos de HTML">
+  <nav class="mt-4 rounded-2xl border border-line bg-surface p-2" aria-label={ariaLabel}>
     <ul class="flex flex-col">
       {
-        htmlModules.map((mod: CourseModule, i: number) => {
+        modules.map((mod: CourseModule, i: number) => {
           const isActiveModule = mod.slug === activeModuleSlug;
           return (
             <li class="border-b border-line last:border-b-0">
@@ -61,7 +76,7 @@ const { activeModuleSlug, activeLessonSlug } = Astro.props;
                       return (
                         <li>
                           <a
-                            href={`/html/${mod.slug}/${lesson.slug}`}
+                            href={`${basePath}/${mod.slug}/${lesson.slug}`}
                             data-lesson-key={`${mod.slug}/${lesson.slug}`}
                             class={`course-lesson-link flex items-center gap-2 rounded-md px-2 py-1.5 text-[13px] transition-colors ${
                               isActiveLesson
@@ -117,7 +132,10 @@ const { activeModuleSlug, activeLessonSlug } = Astro.props;
 
 <script>
   document.addEventListener("astro:page-load", function () {
-    var STORAGE_KEY = "codigo-real-html-progress";
+    var root = document.querySelector("aside[data-storage-key]");
+    if (!root) return;
+    var STORAGE_KEY = root.getAttribute("data-storage-key") || "codigo-real-progress";
+    var MODULE_COUNT = Number(root.getAttribute("data-module-count")) || 10;
 
     function readCompleted() {
       try {
@@ -159,12 +177,12 @@ const { activeModuleSlug, activeLessonSlug } = Astro.props;
         if (allDone) completedModules += 1;
       });
 
-      var fill = document.getElementById("html-progress-fill");
-      var label = document.getElementById("html-progress-label");
-      var percent = document.getElementById("html-progress-percent");
-      var pct = Math.round((completedModules / 10) * 100);
+      var fill = document.querySelector(".course-progress-fill");
+      var label = document.querySelector(".course-progress-label");
+      var percent = document.querySelector(".course-progress-percent");
+      var pct = Math.round((completedModules / MODULE_COUNT) * 100);
       if (fill instanceof HTMLElement) fill.style.width = pct + "%";
-      if (label) label.textContent = completedModules + " de 10 módulos";
+      if (label) label.textContent = completedModules + " de " + MODULE_COUNT + " módulos";
       if (percent) percent.textContent = pct + "%";
     }
 

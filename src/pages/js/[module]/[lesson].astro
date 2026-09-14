@@ -1,0 +1,73 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import CourseHero from "../../../components/course/CourseHero.astro";
+import CourseSidebar from "../../../components/course/CourseSidebar.astro";
+import LessonContent from "../../../components/course/LessonContent.astro";
+import {
+  getAllJsLessonParams,
+  getJsLessonBySlug,
+  jsModules,
+  JS_MODULE_COUNT,
+  FIRST_JS_LESSON_PATH,
+} from "../../../data/js-course";
+
+export function getStaticPaths() {
+  return getAllJsLessonParams().map((params) => ({ params }));
+}
+
+const { module: moduleSlug, lesson: lessonSlug } = Astro.params;
+const found = getJsLessonBySlug(moduleSlug as string, lessonSlug as string);
+
+if (!found) {
+  return Astro.redirect("/js");
+}
+
+const { module: mod, lesson, prevLesson, nextLesson } = found;
+
+const playgroundTabs = [
+  { id: "html" as const, label: "HTML", icon: "html5" as const, color: "text-html" },
+  { id: "css" as const, label: "CSS", icon: "css3" as const, color: "text-css" },
+  { id: "js" as const, label: "JS", icon: "js" as const, color: "text-js" },
+];
+---
+
+<BaseLayout
+  title={`${lesson.title} — Curso de JavaScript — Código Real`}
+  description={lesson.summary}
+>
+  <CourseHero
+    icon="js-logo"
+    title="Curso de JavaScript"
+    subtitle="Dale vida a la web."
+    description="Aprende a programar, crea interacciones y construye proyectos reales."
+  />
+
+  <section class="bg-canvas">
+    <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <div class="grid gap-8 lg:grid-cols-[260px_1fr]">
+        <CourseSidebar
+          modules={jsModules}
+          moduleCount={JS_MODULE_COUNT}
+          basePath="/js"
+          storageKey="codigo-real-js-progress"
+          progressLabel="Progreso en JavaScript"
+          ariaLabel="Módulos de JavaScript"
+          activeModuleSlug={mod.slug}
+          activeLessonSlug={lesson.slug}
+        />
+        <LessonContent
+          module={mod}
+          lesson={lesson}
+          prevLesson={prevLesson}
+          nextLesson={nextLesson}
+          basePath="/js"
+          courseLabel="JavaScript"
+          firstLessonPath={FIRST_JS_LESSON_PATH}
+          storageKey="codigo-real-js-progress"
+          playgroundTabs={playgroundTabs}
+          playgroundDefaultLang="js"
+        />
+      </div>
+    </div>
+  </section>
+</BaseLayout>

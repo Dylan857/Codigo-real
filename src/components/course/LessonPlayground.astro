@@ -1,23 +1,50 @@
 ---
-import Icon from "../Icon.astro";
+import Icon, { type IconName } from "../Icon.astro";
+
+export interface LessonPlaygroundTab {
+  id: "html" | "css" | "js";
+  label: string;
+  icon: IconName;
+  color: string;
+}
 
 interface Props {
   id: string;
-  initialCode: string;
+  tabs?: LessonPlaygroundTab[];
+  defaultLang?: "html" | "css" | "js";
+  initialCode: string | { html?: string; css?: string; js?: string };
 }
 
-const { id, initialCode } = Astro.props;
+const DEFAULT_TABS: LessonPlaygroundTab[] = [{ id: "html", label: "HTML", icon: "html5", color: "text-html" }];
+
+const { id, tabs = DEFAULT_TABS, defaultLang, initialCode } = Astro.props;
+const codeMap = typeof initialCode === "string" ? { html: initialCode } : initialCode;
+const initialActiveId = tabs.some((t) => t.id === defaultLang) ? defaultLang : tabs[0]?.id;
 ---
 
 <div
   id={id}
-  data-initial-code={initialCode}
+  data-tabs={JSON.stringify(tabs)}
+  data-initial-code={JSON.stringify(codeMap)}
   class="lesson-playground overflow-hidden rounded-2xl border border-line bg-surface shadow-2xl shadow-black/30"
 >
   <div class="flex items-center justify-between gap-3 border-b border-line bg-surface-2 px-3 py-2">
-    <div class="flex items-center gap-1.5 rounded-lg bg-surface px-3 py-1.5 text-sm font-medium text-ink">
-      <Icon name="html5" class="h-3.5 w-3.5 text-html" />
-      HTML
+    <div class="flex items-center gap-1" role="tablist" aria-label="Lenguaje del editor">
+      {
+        tabs.map((tab) => (
+          <button
+            type="button"
+            role="tab"
+            data-lang={tab.id}
+            aria-selected={tab.id === initialActiveId ? "true" : "false"}
+            class="lesson-playground-tab flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors data-[active=true]:bg-surface data-[active=true]:text-ink text-ink-muted hover:text-ink"
+            data-active={tab.id === initialActiveId ? "true" : "false"}
+          >
+            <Icon name={tab.icon} class={`h-3.5 w-3.5 ${tab.color}`} />
+            {tab.label}
+          </button>
+        ))
+      }
     </div>
     <button
       type="button"
@@ -66,6 +93,7 @@ const { id, initialCode } = Astro.props;
 <script>
   document.addEventListener("astro:page-load", function () {
     var roots = Array.prototype.slice.call(document.querySelectorAll(".lesson-playground"));
+    var MONACO_LANGUAGE = { html: "html", css: "css", js: "javascript" };
 
     (window.__crLessonThemeListeners || []).forEach(function (fn) {
       window.removeEventListener("codigo-real:theme-change", fn);
@@ -73,19 +101,24 @@ const { id, initialCode } = Astro.props;
     window.__crLessonThemeListeners = [];
 
     (window.__crLessonPlaygroundInstances || []).forEach(function (instance) {
+      Object.keys(instance.models).forEach(function (lang) {
+        try {
+          instance.models[lang].dispose();
+        } catch (e) {}
+      });
       try {
         instance.editor.dispose();
-      } catch (e) {}
-      try {
-        instance.model.dispose();
       } catch (e) {}
     });
     window.__crLessonPlaygroundInstances = [];
 
     roots.forEach(function (root) {
-      var initialCode = root.getAttribute("data-initial-code") || "";
+      var tabs = JSON.parse(root.getAttribute("data-tabs") || "[]");
+      var codeMap = JSON.parse(root.getAttribute("data-initial-code") || "{}");
+      var models = {};
       var editor = null;
-      var model = null;
+      var initialActiveBtn = root.querySelector('.lesson-playground-tab[data-active="true"]');
+      var activeLang = initialActiveBtn ? initialActiveBtn.getAttribute("data-lang") : tabs.length ? tabs[0].id : "html";
       var updateTimer = null;
 
       var editorContainer = root.querySelector(".lesson-editor-container");
@@ -93,10 +126,26 @@ const { id, initialCode } = Astro.props;
       var previewFrame = root.querySelector(".lesson-preview-window");
       var previewLoadingEl = root.querySelector(".lesson-preview-loading");
       var resetBtn = root.querySelector(".lesson-playground-reset");
+      var tabButtons = Array.prototype.slice.call(root.querySelectorAll(".lesson-playground-tab"));
+
+      function buildDocument() {
+        var html = models.html ? models.html.getValue() : codeMap.html || "";
+        var css = models.css ? models.css.getValue() : codeMap.css || "";
+        var js = models.js ? models.js.getValue() : codeMap.js || "";
+
+        var styleTag = "\n<style>\n" + css + "\n</style>\n";
+        var scriptTag = "\n<script>\n" + js + "\n<" + "/script>\n";
+
+        var doc = html;
+        doc = doc.indexOf("</head>") !== -1 ? doc.replace("</head>", styleTag + "</head>") : styleTag + doc;
+        doc = doc.indexOf("</body>") !== -1 ? doc.replace("</body>", scriptTag + "</body>") : doc + scriptTag;
+
+        return doc;
+      }
 
       function renderPreview() {
-        if (!previewFrame || !model) return;
-        previewFrame.srcdoc = model.getValue();
+        if (!previewFrame) return;
+        previewFrame.srcdoc = buildDocument();
         if (previewLoadingEl) {
           previewLoadingEl.remove();
           previewLoadingEl = null;
@@ -108,19 +157,41 @@ const { id, initialCode } = Astro.props;
         updateTimer = window.setTimeout(renderPreview, 250);
       }
 
+      function setActiveTab(lang) {
+        activeLang = lang;
+        tabButtons.forEach(function (btn) {
+          var isActive = btn.getAttribute("data-lang") === lang;
+          btn.setAttribute("data-active", String(isActive));
+          btn.setAttribute("aria-selected", String(isActive));
+        });
+        if (editor && models[lang]) {
+          editor.setModel(models[lang]);
+        }
+      }
+
+      tabButtons.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          setActiveTab(btn.getAttribute("data-lang"));
+        });
+      });
+
       if (resetBtn) {
         resetBtn.addEventListener("click", function () {
-          if (model) model.setValue(initialCode);
+          Object.keys(codeMap).forEach(function (lang) {
+            if (models[lang]) models[lang].setValue(codeMap[lang]);
+          });
           renderPreview();
         });
       }
 
       root.addEventListener("codigo-real:load-challenge", function (event) {
         var code = event.detail && event.detail.code;
-        if (model && typeof code === "string") {
-          model.setValue(code);
-          renderPreview();
-        }
+        if (!code) return;
+        var map = typeof code === "string" ? { html: code } : code;
+        Object.keys(map).forEach(function (lang) {
+          if (models[lang]) models[lang].setValue(map[lang]);
+        });
+        renderPreview();
       });
 
       function handleThemeChange(event) {
@@ -146,10 +217,12 @@ const { id, initialCode } = Astro.props;
           var monaco = window.monaco;
           var currentTheme = document.documentElement.getAttribute("data-theme") === "light" ? "vs" : "vs-dark";
 
-          model = monaco.editor.createModel(initialCode, "html");
+          tabs.forEach(function (tab) {
+            models[tab.id] = monaco.editor.createModel(codeMap[tab.id] || "", MONACO_LANGUAGE[tab.id]);
+          });
 
           editor = monaco.editor.create(editorContainer, {
-            model: model,
+            model: models[activeLang],
             theme: currentTheme,
             automaticLayout: true,
             minimap: { enabled: false },
@@ -160,8 +233,11 @@ const { id, initialCode } = Astro.props;
             smoothScrolling: true,
           });
 
-          model.onDidChangeContent(scheduleRender);
-          window.__crLessonPlaygroundInstances.push({ editor: editor, model: model });
+          Object.keys(models).forEach(function (lang) {
+            models[lang].onDidChangeContent(scheduleRender);
+          });
+
+          window.__crLessonPlaygroundInstances.push({ editor: editor, models: models });
 
           if (loadingEl) loadingEl.remove();
           renderPreview();

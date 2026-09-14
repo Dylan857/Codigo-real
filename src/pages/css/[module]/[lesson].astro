@@ -1,0 +1,73 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import CourseHero from "../../../components/course/CourseHero.astro";
+import CourseSidebar from "../../../components/course/CourseSidebar.astro";
+import LessonContent from "../../../components/course/LessonContent.astro";
+import {
+  getAllCssLessonParams,
+  getCssLessonBySlug,
+  cssModules,
+  CSS_MODULE_COUNT,
+  FIRST_CSS_LESSON_PATH,
+} from "../../../data/css-course";
+
+export function getStaticPaths() {
+  return getAllCssLessonParams().map((params) => ({ params }));
+}
+
+const { module: moduleSlug, lesson: lessonSlug } = Astro.params;
+const found = getCssLessonBySlug(moduleSlug as string, lessonSlug as string);
+
+if (!found) {
+  return Astro.redirect("/css");
+}
+
+const { module: mod, lesson, prevLesson, nextLesson } = found;
+
+const playgroundTabs = [
+  { id: "html" as const, label: "HTML", icon: "html5" as const, color: "text-html" },
+  { id: "css" as const, label: "CSS", icon: "css3" as const, color: "text-css" },
+  { id: "js" as const, label: "JS", icon: "js" as const, color: "text-js" },
+];
+---
+
+<BaseLayout
+  title={`${lesson.title} — Curso de CSS — Código Real`}
+  description={lesson.summary}
+>
+  <CourseHero
+    icon="css3-logo"
+    title="Curso de CSS"
+    subtitle="Dale estilo y vida a la web."
+    description="Aprende CSS con ejemplos interactivos y crea proyectos reales."
+  />
+
+  <section class="bg-canvas">
+    <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <div class="grid gap-8 lg:grid-cols-[260px_1fr]">
+        <CourseSidebar
+          modules={cssModules}
+          moduleCount={CSS_MODULE_COUNT}
+          basePath="/css"
+          storageKey="codigo-real-css-progress"
+          progressLabel="Progreso en CSS"
+          ariaLabel="Módulos de CSS"
+          activeModuleSlug={mod.slug}
+          activeLessonSlug={lesson.slug}
+        />
+        <LessonContent
+          module={mod}
+          lesson={lesson}
+          prevLesson={prevLesson}
+          nextLesson={nextLesson}
+          basePath="/css"
+          courseLabel="CSS"
+          firstLessonPath={FIRST_CSS_LESSON_PATH}
+          storageKey="codigo-real-css-progress"
+          playgroundTabs={playgroundTabs}
+          playgroundDefaultLang="css"
+        />
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -2,6 +2,8 @@
 import { ClientRouter } from "astro:transitions";
 import Icon from "../components/Icon.astro";
 import { FIRST_HTML_LESSON_PATH } from "../data/html-course";
+import { FIRST_CSS_LESSON_PATH } from "../data/css-course";
+import { FIRST_JS_LESSON_PATH } from "../data/js-course";
 import "../styles/global.css";
 
 interface Props {
@@ -17,8 +19,8 @@ const {
 const navLinks = [
   { label: "Inicio", href: "/" },
   { label: "HTML", href: FIRST_HTML_LESSON_PATH, activeMatch: "/html" },
-  { label: "CSS", href: "/#css" },
-  { label: "JavaScript", href: "/#javascript" },
+  { label: "CSS", href: FIRST_CSS_LESSON_PATH, activeMatch: "/css" },
+  { label: "JavaScript", href: FIRST_JS_LESSON_PATH, activeMatch: "/js" },
   { label: "Ejercicios", href: "/#ejercicios" },
   { label: "Blog", href: "/#blog" },
 ];
@@ -36,15 +38,30 @@ function isNavLinkActive(link: { href: string; activeMatch?: string }) {
 const footerColumns = [
   {
     title: "Aprende",
-    links: ["HTML", "CSS", "JavaScript", "Ejercicios"],
+    links: [
+      { label: "HTML", href: FIRST_HTML_LESSON_PATH },
+      { label: "CSS", href: FIRST_CSS_LESSON_PATH },
+      { label: "JavaScript", href: FIRST_JS_LESSON_PATH },
+      { label: "Ejercicios", href: "#" },
+    ],
   },
   {
     title: "Recursos",
-    links: ["Blog", "Proyectos", "Herramientas", "Preguntas frecuentes"],
+    links: [
+      { label: "Blog", href: "#" },
+      { label: "Proyectos", href: "#" },
+      { label: "Herramientas", href: "#" },
+      { label: "Preguntas frecuentes", href: "#" },
+    ],
   },
   {
     title: "Apóyame",
-    links: ["Donaciones", "Afiliados", "Anúnciate aquí", "Contacta"],
+    links: [
+      { label: "Donaciones", href: "#" },
+      { label: "Afiliados", href: "#" },
+      { label: "Anúnciate aquí", href: "#" },
+      { label: "Contacta", href: "#" },
+    ],
   },
 ];
 
@@ -55,7 +72,9 @@ const year = new Date().getFullYear();
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
     <meta name="generator" content={Astro.generator} />
 
     <title>{title}</title>
@@ -295,8 +314,8 @@ const year = new Date().getFullYear();
                 <ul class="mt-4 space-y-3">
                   {col.links.map((link) => (
                     <li>
-                      <a href="#" class="text-sm text-ink-muted transition-colors hover:text-ink">
-                        {link}
+                      <a href={link.href} class="text-sm text-ink-muted transition-colors hover:text-ink">
+                        {link.label}
                       </a>
                     </li>
                   ))}

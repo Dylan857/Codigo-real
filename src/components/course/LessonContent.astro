@@ -2,16 +2,34 @@
 import Icon from "../Icon.astro";
 import LessonPlayground from "./LessonPlayground.astro";
 import LessonAside from "./LessonAside.astro";
-import { FIRST_HTML_LESSON_PATH, type AdjacentLesson, type CourseModule, type RealLesson } from "../../data/html-course";
+import type { AdjacentLesson, CourseModule, RealLesson } from "../../data/course-types";
+import type { LessonPlaygroundTab } from "./LessonPlayground.astro";
 
 interface Props {
   module: CourseModule;
   lesson: RealLesson;
   prevLesson: AdjacentLesson | null;
   nextLesson: AdjacentLesson | null;
+  basePath: string;
+  courseLabel: string;
+  firstLessonPath: string;
+  storageKey: string;
+  playgroundTabs?: LessonPlaygroundTab[];
+  playgroundDefaultLang?: "html" | "css" | "js";
 }
 
-const { module: mod, lesson, prevLesson, nextLesson } = Astro.props;
+const {
+  module: mod,
+  lesson,
+  prevLesson,
+  nextLesson,
+  basePath,
+  courseLabel,
+  firstLessonPath,
+  storageKey,
+  playgroundTabs,
+  playgroundDefaultLang,
+} = Astro.props;
 const playgroundId = `playground-${lesson.slug}`;
 ---
 
@@ -19,7 +37,7 @@ const playgroundId = `playground-${lesson.slug}`;
   <nav class="flex flex-wrap items-center gap-1.5 text-sm text-ink-muted" aria-label="Breadcrumb">
     <a href="/" class="hover:text-ink">Inicio</a>
     <Icon name="chevron-right" class="h-3.5 w-3.5" />
-    <a href={FIRST_HTML_LESSON_PATH} class="hover:text-ink">HTML</a>
+    <a href={firstLessonPath} class="hover:text-ink">{courseLabel}</a>
     <Icon name="chevron-right" class="h-3.5 w-3.5" />
     <span>{mod.title}</span>
     <Icon name="chevron-right" class="h-3.5 w-3.5" />
@@ -32,7 +50,7 @@ const playgroundId = `playground-${lesson.slug}`;
       {
         prevLesson ? (
           <a
-            href={`/html/${prevLesson.moduleSlug}/${prevLesson.slug}`}
+            href={`${basePath}/${prevLesson.moduleSlug}/${prevLesson.slug}`}
             class="flex items-center gap-1.5 rounded-lg border border-line px-3.5 py-2 text-sm font-semibold text-ink transition-colors hover:bg-surface"
           >
             <Icon name="arrow-right" class="h-4 w-4 rotate-180" />
@@ -48,7 +66,7 @@ const playgroundId = `playground-${lesson.slug}`;
       {
         nextLesson ? (
           <a
-            href={`/html/${nextLesson.moduleSlug}/${nextLesson.slug}`}
+            href={`${basePath}/${nextLesson.moduleSlug}/${nextLesson.slug}`}
             class="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-accent to-accent-2 px-3.5 py-2 text-sm font-semibold text-white transition-transform hover:scale-[1.02] active:scale-[0.98]"
           >
             Siguiente
@@ -68,7 +86,12 @@ const playgroundId = `playground-${lesson.slug}`;
 
   <div class="mt-6 grid gap-6 lg:grid-cols-[1fr_300px]">
     <div class="flex flex-col gap-6">
-      <LessonPlayground id={playgroundId} initialCode={lesson.playgroundCode} />
+      <LessonPlayground
+        id={playgroundId}
+        tabs={playgroundTabs}
+        defaultLang={playgroundDefaultLang}
+        initialCode={lesson.playgroundCode}
+      />
 
       <div class="flex items-start gap-2.5 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-200">
         <Icon name="lightbulb" class="mt-0.5 h-4 w-4 shrink-0 text-sky-600 dark:text-sky-400" />
@@ -110,7 +133,7 @@ const playgroundId = `playground-${lesson.slug}`;
           type="button"
           class="lesson-challenge-btn flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-emerald-300 bg-white px-4 py-2 text-sm font-semibold text-emerald-800 transition-colors hover:bg-emerald-100 dark:border-emerald-500/40 dark:bg-surface dark:text-emerald-200 dark:hover:bg-surface-2"
           data-target={playgroundId}
-          data-challenge-code={lesson.challenge.code}
+          data-challenge-code={JSON.stringify(lesson.challenge.code)}
         >
           ¡Acepto el reto!
           <Icon name="arrow-right" class="h-4 w-4" />
@@ -118,13 +141,13 @@ const playgroundId = `playground-${lesson.slug}`;
       </div>
     </div>
 
-    <LessonAside lesson={lesson} nextLesson={nextLesson} />
+    <LessonAside lesson={lesson} nextLesson={nextLesson} basePath={basePath} />
   </div>
 </div>
 
-<script define:vars={{ moduleSlug: mod.slug, lessonSlug: lesson.slug }}>
+<script define:vars={{ moduleSlug: mod.slug, lessonSlug: lesson.slug, storageKey }}>
   (function () {
-    var STORAGE_KEY = "codigo-real-html-progress";
+    var STORAGE_KEY = storageKey;
     var key = moduleSlug + "/" + lessonSlug;
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
@@ -144,7 +167,10 @@ const playgroundId = `playground-${lesson.slug}`;
     buttons.forEach(function (btn) {
       btn.addEventListener("click", function () {
         var targetId = btn.getAttribute("data-target");
-        var code = btn.getAttribute("data-challenge-code") || "";
+        var code = null;
+        try {
+          code = JSON.parse(btn.getAttribute("data-challenge-code") || "null");
+        } catch (e) {}
         var root = targetId ? document.getElementById(targetId) : null;
         if (root) {
           root.dispatchEvent(new CustomEvent("codigo-real:load-challenge", { detail: { code: code } }));
