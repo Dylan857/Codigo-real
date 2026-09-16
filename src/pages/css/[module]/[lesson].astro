@@ -29,11 +29,18 @@ const playgroundTabs = [
   { id: "css" as const, label: "CSS", icon: "css3" as const, color: "text-css" },
   { id: "js" as const, label: "JS", icon: "js" as const, color: "text-js" },
 ];
+
+const breadcrumbs = [
+  { name: "Inicio", url: "/" },
+  { name: "Curso de CSS", url: "/css" },
+  { name: lesson.title, url: Astro.url.pathname },
+];
 ---
 
 <BaseLayout
   title={`${lesson.title} — Curso de CSS — Código Real`}
   description={lesson.summary}
+  breadcrumbs={breadcrumbs}
 >
   <CourseHero
     icon="css3-logo"
