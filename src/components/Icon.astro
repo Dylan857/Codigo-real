@@ -1,4 +1,9 @@
 ---
+import { Image } from "astro:assets";
+import html5Logo from "../assets/images/html5-logo.png";
+import css3Logo from "../assets/images/css3-logo.png";
+import jsLogo from "../assets/images/js-logo.png";
+
 export type IconName =
   | "logo-mark"
   | "search"
@@ -176,13 +181,19 @@ const { name, class: className = "" } = Astro.props;
   )
 }
 {
-  name === "html5" && <img src="/images/html5-logo.png" alt="HTML5" class={`object-contain ${className}`} />
+  name === "html5" && (
+    <Image src={html5Logo} width={256} alt="HTML5" class={`object-contain ${className}`} />
+  )
 }
 {
-  name === "css3-logo" && <img src="/images/css3-logo.png" alt="CSS3" class={`object-contain ${className}`} />
+  name === "css3-logo" && (
+    <Image src={css3Logo} width={256} alt="CSS3" class={`object-contain ${className}`} />
+  )
 }
 {
-  name === "js-logo" && <img src="/images/js-logo.png" alt="JavaScript" class={`object-contain ${className}`} />
+  name === "js-logo" && (
+    <Image src={jsLogo} width={256} alt="JavaScript" class={`object-contain ${className}`} />
+  )
 }
 {
   name === "chevron-down" && (

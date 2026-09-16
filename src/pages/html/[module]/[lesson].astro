@@ -3,6 +3,7 @@ import BaseLayout from "../../../layouts/BaseLayout.astro";
 import CourseHero from "../../../components/course/CourseHero.astro";
 import CourseSidebar from "../../../components/course/CourseSidebar.astro";
 import LessonContent from "../../../components/course/LessonContent.astro";
+import htmlCourseCover from "../../../assets/images/html-course-cover.png";
 import {
   getAllRealLessonParams,
   getRealLessonBySlug,
@@ -23,18 +24,25 @@ if (!found) {
 }
 
 const { module: mod, lesson, prevLesson, nextLesson } = found;
+
+const breadcrumbs = [
+  { name: "Inicio", url: "/" },
+  { name: "Curso de HTML", url: "/html" },
+  { name: lesson.title, url: Astro.url.pathname },
+];
 ---
 
 <BaseLayout
   title={`${lesson.title} — Curso de HTML — Código Real`}
   description={lesson.summary}
+  breadcrumbs={breadcrumbs}
 >
   <CourseHero
     icon="html5"
     title="Curso de HTML"
     subtitle="Construye la estructura de la web."
     description="Aprende cada etiqueta con ejemplos interactivos y crea proyectos reales."
-    coverImage="/images/html-course-cover.png"
+    coverImage={htmlCourseCover}
   />
 
   <section class="bg-canvas">

@@ -1,20 +1,60 @@
 ---
+import { getImage } from "astro:assets";
 import { ClientRouter } from "astro:transitions";
 import Icon from "../components/Icon.astro";
 import { FIRST_HTML_LESSON_PATH } from "../data/html-course";
 import { FIRST_CSS_LESSON_PATH } from "../data/css-course";
 import { FIRST_JS_LESSON_PATH } from "../data/js-course";
+import ogImageSource from "../assets/images/html-course-cover.png";
 import "../styles/global.css";
+
+interface Breadcrumb {
+  name: string;
+  url: string;
+}
 
 interface Props {
   title?: string;
   description?: string;
+  breadcrumbs?: Breadcrumb[];
 }
 
 const {
   title = "Código Real — Aprende desarrollo web practicando",
-  description = "Explora HTML, CSS y JavaScript de forma interactiva. Escribe código real, ve los resultados al instante y crea proyectos reales desde el primer día. 100% gratis, sin registro.",
+  description = "Explora HTML, CSS y JavaScript de forma interactiva. Escribe código real, ve resultados al instante y crea proyectos reales. 100% gratis, sin registro.",
+  breadcrumbs,
 } = Astro.props;
+
+const ogImage = await getImage({ src: ogImageSource, width: 1200, format: "webp" });
+const ogImageUrl = new URL(ogImage.src, Astro.site);
+
+const siteJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      name: "Código Real",
+      url: Astro.site?.toString(),
+      logo: new URL("/favicon.png", Astro.site).toString(),
+    },
+    {
+      "@type": "WebSite",
+      name: "Código Real",
+      url: Astro.site?.toString(),
+    },
+  ],
+};
+
+const breadcrumbJsonLd = breadcrumbs && {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: breadcrumbs.map((crumb, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    name: crumb.name,
+    item: new URL(crumb.url, Astro.site).toString(),
+  })),
+};
 
 const navLinks = [
   { label: "Inicio", href: "/" },
@@ -77,12 +117,20 @@ const year = new Date().getFullYear();
     <link rel="apple-touch-icon" href="/favicon.png" />
     <meta name="generator" content={Astro.generator} />
 
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={new URL(Astro.url.pathname, Astro.site)} />
+    <meta property="og:image" content={ogImageUrl} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(siteJsonLd)} />
+    {breadcrumbJsonLd && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />}
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
