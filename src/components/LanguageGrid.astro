@@ -1,6 +1,8 @@
 ---
 import Icon from "./Icon.astro";
 import { FIRST_HTML_LESSON_PATH } from "../data/html-course";
+import { FIRST_CSS_LESSON_PATH } from "../data/css-course";
+import { FIRST_JS_LESSON_PATH } from "../data/js-course";
 
 const languages = [
   {
@@ -27,7 +29,7 @@ const languages = [
     border: "border-css-bg-ring",
     btn: "bg-css-btn hover:bg-css-btn/90",
     btnText: "text-white",
-    href: "#css",
+    href: FIRST_CSS_LESSON_PATH,
   },
   {
     id: "js",
@@ -40,7 +42,7 @@ const languages = [
     border: "border-js-bg-ring",
     btn: "bg-js-btn hover:bg-js-btn/90",
     btnText: "text-js-ink",
-    href: "#javascript",
+    href: FIRST_JS_LESSON_PATH,
   },
 ] as const;
 ---
