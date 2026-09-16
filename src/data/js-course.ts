@@ -800,6 +800,328 @@ const domLessons: RealLesson[] = [
   },
 ];
 
+const eventosLessons: RealLesson[] = [
+  {
+    slug: "addeventlistener",
+    title: "addEventListener",
+    summary:
+      "addEventListener registra una función que se ejecuta cada vez que ocurre un evento (como un clic) sobre un elemento, y le pasa automáticamente un objeto evento con información sobre lo que pasó.",
+    playgroundCode: {
+      html: `<button id="contador">Clics: 0</button>\n<p id="posicion"></p>\n`,
+      css: `body {\n  font-family: system-ui, sans-serif;\n  padding: 40px;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  gap: 12px;\n}\n\nbutton {\n  padding: 10px 24px;\n  border: none;\n  border-radius: 8px;\n  background-color: #2563eb;\n  color: white;\n  font-weight: 600;\n  cursor: pointer;\n}\n\n#posicion {\n  font-size: 14px;\n  color: #64748b;\n}\n`,
+      js: `const boton = document.getElementById("contador");\nconst posicion = document.getElementById("posicion");\nlet clics = 0;\n\nboton.addEventListener("click", function (evento) {\n  clics++;\n  boton.textContent = \`Clics: \${clics}\`;\n  posicion.textContent = \`Último clic en: (\${evento.clientX}, \${evento.clientY})\`;\n});\n`,
+    },
+    hint: "Cambia \"click\" por \"dblclick\" en addEventListener y observa que ahora necesitas hacer doble clic para que el contador avance.",
+    explanationIntro: "addEventListener conecta una función a un evento, y esa función recibe información sobre lo que ocurrió:",
+    explanationRows: [
+      { code: 'elemento.addEventListener("evento", funcion)', desc: "Registra funcion para que se ejecute cada vez que ocurra ese evento en elemento, sin sobrescribir otros listeners que ya tenga." },
+      { code: "function (evento) {...}", desc: "La función recibe automáticamente un objeto evento con datos sobre lo que pasó (qué elemento, en qué posición, etc.)." },
+      { code: "evento.clientX / evento.clientY", desc: "Propiedades del objeto evento con la posición del cursor (en píxeles) en el momento del clic." },
+      { code: '"click", "mouseenter", "keydown"', desc: "Algunos de los nombres de evento más comunes. addEventListener acepta cualquiera de ellos como primer argumento." },
+    ],
+    tip: "A diferencia de asignar boton.onclick = funcion (que solo permite una función y la siguiente asignación sobrescribe a la anterior), addEventListener te deja agregar varias funciones independientes al mismo evento.",
+    extra: "También puedes quitar un listener con removeEventListener, pero necesitas pasarle la misma referencia de función que usaste en addEventListener: no puedes quitarlo si lo agregaste con una función anónima.",
+    commonError: 'Escribir el nombre del evento con el prefijo "on", como addEventListener("onclick", ...) en vez de addEventListener("click", ...): el prefijo on solo se usa en propiedades como onclick, el nombre del evento en addEventListener va sin él.',
+    nextStepText: "Ya sabes reaccionar a eventos genéricos como el clic. Ahora veamos los eventos propios de los formularios: enviar y escribir en un campo.",
+    challenge: {
+      description: 'Cambia "click" por "dblclick" en addEventListener y confirma que ahora necesitas doble clic para que el contador avance.',
+      code: {
+        html: `<button id="contador">Clics: 0</button>\n<p id="posicion"></p>\n`,
+        css: `body {\n  font-family: system-ui, sans-serif;\n  padding: 40px;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  gap: 12px;\n}\n\nbutton {\n  padding: 10px 24px;\n  border: none;\n  border-radius: 8px;\n  background-color: #2563eb;\n  color: white;\n  font-weight: 600;\n  cursor: pointer;\n}\n\n#posicion {\n  font-size: 14px;\n  color: #64748b;\n}\n`,
+        js: `const boton = document.getElementById("contador");\nconst posicion = document.getElementById("posicion");\nlet clics = 0;\n\nboton.addEventListener("click", function (evento) { /* cambia "click" por "dblclick" */\n  clics++;\n  boton.textContent = \`Clics: \${clics}\`;\n  posicion.textContent = \`Último clic en: (\${evento.clientX}, \${evento.clientY})\`;\n});\n`,
+      },
+    },
+  },
+  {
+    slug: "eventos-de-formulario",
+    title: "Eventos de formulario",
+    summary:
+      "Los formularios tienen sus propios eventos: submit se dispara al enviarlos e input se dispara mientras el usuario escribe. Junto con preventDefault y .value, controlas todo el flujo sin recargar la página.",
+    playgroundCode: {
+      html: `<form id="formulario">\n  <input type="text" id="nombre" placeholder="Tu nombre" />\n  <button type="submit">Enviar</button>\n</form>\n<p id="contador">0 caracteres</p>\n<p id="saludo"></p>\n`,
+      css: `body {\n  font-family: system-ui, sans-serif;\n  padding: 40px;\n  max-width: 320px;\n}\n\n#formulario {\n  display: flex;\n  gap: 8px;\n  margin-bottom: 12px;\n}\n\ninput {\n  flex: 1;\n  padding: 8px 12px;\n  border-radius: 8px;\n  border: 1px solid #cbd5e1;\n}\n\nbutton {\n  padding: 8px 16px;\n  border: none;\n  border-radius: 8px;\n  background-color: #2563eb;\n  color: white;\n  font-weight: 600;\n  cursor: pointer;\n}\n\n#contador {\n  font-size: 13px;\n  color: #64748b;\n}\n\n#saludo {\n  font-weight: 600;\n  color: #16a34a;\n}\n`,
+      js: `const formulario = document.getElementById("formulario");\nconst nombre = document.getElementById("nombre");\nconst contador = document.getElementById("contador");\nconst saludo = document.getElementById("saludo");\n\nnombre.addEventListener("input", function () {\n  contador.textContent = \`\${nombre.value.length} caracteres\`;\n});\n\nformulario.addEventListener("submit", function (evento) {\n  evento.preventDefault();\n  saludo.textContent = \`¡Hola, \${nombre.value}!\`;\n});\n`,
+    },
+    hint: 'Cambia saludo.textContent = `¡Hola, ${nombre.value}!`; por otro mensaje y prueba enviar el formulario de nuevo.',
+    explanationIntro: "Los formularios disparan sus propios eventos, distintos a un simple clic:",
+    explanationRows: [
+      { code: 'formulario.addEventListener("submit", funcion)', desc: "Se ejecuta cuando el usuario envía el formulario (clic en el botón submit o Enter dentro de un input)." },
+      { code: "evento.preventDefault()", desc: "Cancela la acción por defecto del evento; en un submit, evita que el navegador recargue la página." },
+      { code: 'input.addEventListener("input", funcion)', desc: "Se ejecuta cada vez que el valor del campo cambia, mientras el usuario escribe." },
+      { code: "input.value", desc: "Contiene el texto actual escrito dentro del campo en ese momento." },
+    ],
+    tip: "preventDefault() no cancela el evento en sí: tu función sigue ejecutándose con normalidad, solo evita el comportamiento automático que el navegador aplicaría después (como recargar la página en un submit).",
+    extra: 'El evento "change" es parecido a "input", pero solo se dispara cuando el campo pierde el foco y su valor cambió, no en cada tecla presionada.',
+    commonError: "Olvidar evento.preventDefault() en el submit: el formulario se envía de la forma tradicional y el navegador recarga la página, perdiendo cualquier cambio hecho con JavaScript.",
+    nextStepText: "Ya sabes reaccionar al envío y la escritura en un formulario. Ahora veamos delegación de eventos: cómo manejar clics de muchos elementos con un solo listener.",
+    challenge: {
+      description: "Cambia el mensaje de saludo.textContent y confirma que se actualiza cada vez que envías el formulario con un nombre distinto.",
+      code: {
+        html: `<form id="formulario">\n  <input type="text" id="nombre" placeholder="Tu nombre" />\n  <button type="submit">Enviar</button>\n</form>\n<p id="contador">0 caracteres</p>\n<p id="saludo"></p>\n`,
+        css: `body {\n  font-family: system-ui, sans-serif;\n  padding: 40px;\n  max-width: 320px;\n}\n\n#formulario {\n  display: flex;\n  gap: 8px;\n  margin-bottom: 12px;\n}\n\ninput {\n  flex: 1;\n  padding: 8px 12px;\n  border-radius: 8px;\n  border: 1px solid #cbd5e1;\n}\n\nbutton {\n  padding: 8px 16px;\n  border: none;\n  border-radius: 8px;\n  background-color: #2563eb;\n  color: white;\n  font-weight: 600;\n  cursor: pointer;\n}\n\n#contador {\n  font-size: 13px;\n  color: #64748b;\n}\n\n#saludo {\n  font-weight: 600;\n  color: #16a34a;\n}\n`,
+        js: `const formulario = document.getElementById("formulario");\nconst nombre = document.getElementById("nombre");\nconst contador = document.getElementById("contador");\nconst saludo = document.getElementById("saludo");\n\nnombre.addEventListener("input", function () {\n  contador.textContent = \`\${nombre.value.length} caracteres\`;\n});\n\nformulario.addEventListener("submit", function (evento) {\n  evento.preventDefault();\n  saludo.textContent = \`¡Hola, \${nombre.value}!\`; /* cambia este mensaje */\n});\n`,
+      },
+    },
+  },
+  {
+    slug: "delegacion-de-eventos",
+    title: "Delegación de eventos",
+    summary:
+      "En vez de agregar un listener a cada elemento hijo, puedes agregar uno solo al elemento padre y usar evento.target para saber cuál de los hijos lo disparó. Esto se llama delegación de eventos.",
+    playgroundCode: {
+      html: `<ul id="lista">\n  <li>Aprender HTML</li>\n  <li>Aprender CSS</li>\n  <li>Aprender JavaScript</li>\n</ul>\n<button id="agregar">Agregar tarea</button>\n`,
+      css: `body {\n  font-family: system-ui, sans-serif;\n  padding: 40px;\n  max-width: 320px;\n}\n\n#lista {\n  padding-left: 20px;\n  margin-bottom: 16px;\n}\n\nli {\n  margin-bottom: 6px;\n  cursor: pointer;\n}\n\nli.completada {\n  text-decoration: line-through;\n  color: #94a3b8;\n}\n\nbutton {\n  padding: 8px 16px;\n  border: none;\n  border-radius: 8px;\n  background-color: #2563eb;\n  color: white;\n  font-weight: 600;\n  cursor: pointer;\n}\n`,
+      js: `const lista = document.getElementById("lista");\nconst botonAgregar = document.getElementById("agregar");\nlet contador = 4;\n\nlista.addEventListener("click", function (evento) {\n  if (evento.target.tagName === "LI") {\n    evento.target.classList.toggle("completada");\n  }\n});\n\nbotonAgregar.addEventListener("click", function () {\n  const item = document.createElement("li");\n  item.textContent = \`Tarea \${contador}\`;\n  contador++;\n  lista.append(item);\n});\n`,
+    },
+    hint: 'Agrega una nueva tarea con el botón y haz clic sobre ella: se marca como completada igual que las que ya existían, sin agregar ningún addEventListener nuevo.',
+    explanationIntro: "En vez de un listener por cada elemento hijo, delegas la escucha al elemento padre:",
+    explanationRows: [
+      { code: "Delegación de eventos", desc: "Agregar un solo addEventListener al elemento padre (como el <ul>) en vez de uno por cada hijo, y usar el evento para saber cuál disparó." },
+      { code: "evento.target", desc: "La referencia exacta al elemento donde ocurrió el evento (el <li> específico), aunque el listener esté en el <ul>." },
+      { code: "evento.target.tagName", desc: 'El nombre de la etiqueta del elemento en mayúsculas (como "LI"), útil para confirmar qué tipo de elemento generó el evento.' },
+      { code: "Bubbling (propagación)", desc: "Un evento que ocurre en un elemento hijo también sube y se puede detectar en sus elementos padres; es lo que hace posible la delegación." },
+    ],
+    tip: "La delegación es especialmente útil con elementos creados dinámicamente (como con createElement): no necesitas registrar un addEventListener en cada uno, el del padre ya los cubre a todos automáticamente.",
+    extra: "Delegar también es más eficiente en listas largas: en vez de cientos de listeners (uno por elemento), el navegador solo mantiene uno solo en el elemento padre.",
+    commonError: "No validar evento.target.tagName antes de actuar: si haces clic en un espacio vacío del <ul> (no sobre un <li>), evento.target sería el propio <ul>, y sin esa validación el código intentaría aplicar classList.toggle al elemento equivocado.",
+    nextStepText: "Ya sabes reaccionar a clics, envíos de formulario y delegar eventos a elementos padres. En el siguiente módulo vas a conectar tu página con el mundo exterior: peticiones fetch y almacenamiento en el navegador.",
+    challenge: {
+      description: "Agrega dos tareas nuevas con el botón y márcalas como completadas haciendo clic sobre ellas, sin modificar el JavaScript.",
+      code: {
+        html: `<ul id="lista">\n  <li>Aprender HTML</li>\n  <li>Aprender CSS</li>\n  <li>Aprender JavaScript</li>\n</ul>\n<button id="agregar">Agregar tarea</button>\n`,
+        css: `body {\n  font-family: system-ui, sans-serif;\n  padding: 40px;\n  max-width: 320px;\n}\n\n#lista {\n  padding-left: 20px;\n  margin-bottom: 16px;\n}\n\nli {\n  margin-bottom: 6px;\n  cursor: pointer;\n}\n\nli.completada {\n  text-decoration: line-through;\n  color: #94a3b8;\n}\n\nbutton {\n  padding: 8px 16px;\n  border: none;\n  border-radius: 8px;\n  background-color: #2563eb;\n  color: white;\n  font-weight: 600;\n  cursor: pointer;\n}\n`,
+        js: `const lista = document.getElementById("lista");\nconst botonAgregar = document.getElementById("agregar");\nlet contador = 4;\n\nlista.addEventListener("click", function (evento) {\n  if (evento.target.tagName === "LI") {\n    evento.target.classList.toggle("completada");\n  }\n});\n\nbotonAgregar.addEventListener("click", function () {\n  const item = document.createElement("li");\n  item.textContent = \`Tarea \${contador}\`;\n  contador++;\n  lista.append(item);\n});\n`,
+      },
+    },
+  },
+];
+
+const apisLessons: RealLesson[] = [
+  {
+    slug: "fetch-y-peticiones",
+    title: "fetch y peticiones",
+    summary:
+      "fetch te permite pedir datos a un servidor sin recargar la página. Devuelve una promesa, así que usas .then() para procesar la respuesta cuando llega, y .catch() para manejar errores de red.",
+    playgroundCode: {
+      html: `<h1>Perfil de usuario</h1>\n<div id="salida">Cargando...</div>\n`,
+      css: `body {\n  font-family: system-ui, sans-serif;\n  padding: 40px;\n  text-align: center;\n}\n\n#salida {\n  font-weight: 600;\n  color: #2563eb;\n}\n`,
+      js: `fetch("https://jsonplaceholder.typicode.com/users/1")\n  .then(function (respuesta) {\n    return respuesta.json();\n  })\n  .then(function (usuario) {\n    console.log(usuario);\n    document.getElementById("salida").textContent = \`\${usuario.name} — \${usuario.email}\`;\n  })\n  .catch(function (error) {\n    document.getElementById("salida").textContent = "Ocurrió un error al pedir los datos.";\n  });\n`,
+    },
+    hint: 'Cambia "/users/1" por "/users/3" en la URL y observa que ahora se muestra otra persona.',
+    explanationIntro: "fetch inicia una petición de red y te deja reaccionar cuando la respuesta llega, sin bloquear el resto del código mientras tanto:",
+    explanationRows: [
+      { code: 'fetch("url")', desc: "Inicia una petición al servidor indicado y devuelve una promesa: un valor que representa algo que estará listo más adelante." },
+      { code: ".then(funcion)", desc: "Registra una función que se ejecuta cuando la promesa se resuelve (la petición terminó), y recibe el resultado como argumento." },
+      { code: "respuesta.json()", desc: "Convierte el cuerpo de la respuesta (texto plano) en un objeto de JavaScript utilizable. También devuelve una promesa, por eso necesita su propio .then()." },
+      { code: ".catch(funcion)", desc: "Captura errores de red (como no tener conexión) para que no rompan la página; se ejecuta en vez de los .then() cuando algo falla." },
+    ],
+    tip: "fetch no rechaza la promesa (no dispara .catch()) solo porque el servidor responda con un error como 404: eso sigue considerándose una respuesta válida. Si necesitas detectar códigos de error, revisa la propiedad respuesta.ok o respuesta.status dentro del primer .then().",
+    extra: "Encadenar varios .then() es normal: cada uno recibe el valor que devolvió el anterior. Por eso el primer .then() devuelve respuesta.json() y el segundo .then() ya recibe el objeto usuario listo para usar.",
+    commonError: "Usar directamente la respuesta de fetch como si ya fuera el dato final, sin el .then() que llama a respuesta.json(): el primer resultado de fetch es un objeto Response (información sobre la petición), no los datos en sí.",
+    nextStepText: "Ya sabes pedir datos a un servidor con fetch. Ahora veamos cómo guardar información directamente en el navegador del usuario con localStorage y sessionStorage.",
+    challenge: {
+      description: 'Cambia "/users/1" por "/users/3" en la URL de fetch y confirma que se muestra otra persona.',
+      code: {
+        html: `<h1>Perfil de usuario</h1>\n<div id="salida">Cargando...</div>\n`,
+        css: `body {\n  font-family: system-ui, sans-serif;\n  padding: 40px;\n  text-align: center;\n}\n\n#salida {\n  font-weight: 600;\n  color: #2563eb;\n}\n`,
+        js: `fetch("https://jsonplaceholder.typicode.com/users/1") /* cambia el número al final de la URL */\n  .then(function (respuesta) {\n    return respuesta.json();\n  })\n  .then(function (usuario) {\n    console.log(usuario);\n    document.getElementById("salida").textContent = \`\${usuario.name} — \${usuario.email}\`;\n  })\n  .catch(function (error) {\n    document.getElementById("salida").textContent = "Ocurrió un error al pedir los datos.";\n  });\n`,
+      },
+    },
+  },
+  {
+    slug: "localstorage-y-sessionstorage",
+    title: "localStorage y sessionStorage",
+    summary:
+      "localStorage guarda pares clave-valor directamente en el navegador del usuario, y esos datos siguen ahí incluso después de recargar la página o cerrarla. sessionStorage funciona igual, pero solo dura mientras la pestaña sigue abierta.",
+    playgroundCode: {
+      html: `<h1>Preferencias</h1>\n<div id="salida"></div>\n`,
+      css: `body {\n  font-family: system-ui, sans-serif;\n  padding: 40px;\n  text-align: center;\n}\n\n#salida {\n  font-weight: 600;\n  color: #7c3aed;\n}\n`,
+      js: `// Este playground no puede usar el localStorage real del navegador por seguridad,\n// así que lo simulamos aquí con los mismos métodos (setItem, getItem, removeItem).\n// En una página normal, no necesitarías escribir esto: localStorage ya existe.\nconst localStorage = {\n  datos: {},\n  setItem(clave, valor) {\n    this.datos[clave] = String(valor);\n  },\n  getItem(clave) {\n    return clave in this.datos ? this.datos[clave] : null;\n  },\n  removeItem(clave) {\n    delete this.datos[clave];\n  },\n};\n\nlocalStorage.setItem("tema", "oscuro");\nconsole.log(localStorage.getItem("tema"));\n\ndocument.getElementById("salida").textContent = \`Tema guardado: \${localStorage.getItem("tema")}\`;\n`,
+    },
+    hint: 'Cambia localStorage.setItem("tema", "oscuro"); por otro valor, como "claro", y observa que el mensaje final cambia.',
+    explanationIntro: "localStorage guarda datos por clave, como un objeto simple, pero directamente en el navegador del usuario:",
+    explanationRows: [
+      { code: 'localStorage.setItem("clave", valor)', desc: "Guarda valor bajo el nombre clave. Si esa clave ya existía, la reemplaza." },
+      { code: 'localStorage.getItem("clave")', desc: "Devuelve el valor guardado bajo esa clave, o null si no existe." },
+      { code: 'localStorage.removeItem("clave")', desc: "Elimina esa clave y su valor guardado." },
+      { code: "sessionStorage", desc: "Tiene exactamente los mismos métodos que localStorage, pero sus datos se borran al cerrar la pestaña; localStorage persiste indefinidamente." },
+    ],
+    tip: "En una página real (fuera de este playground), localStorage.setItem() guarda los datos automáticamente en el navegador: si recargas la página, seguirían ahí sin que tengas que hacer nada más. Aquí lo simulamos con un objeto en memoria por las restricciones de seguridad del playground, pero los métodos que usas son exactamente los reales.",
+    extra: "localStorage solo guarda texto (strings): si guardas un número, internamente se convierte a texto, y al leerlo de vuelta obtienes un string, no el número original. Para guardar datos más complejos como objetos, necesitas convertirlos a texto primero (lo verás en la siguiente lección).",
+    commonError: "Olvidar que localStorage solo guarda strings: si guardas localStorage.setItem(\"edad\", 25) y luego lo lees, obtienes el string \"25\" en vez del número 25, y operaciones como sumar directamente pueden no funcionar como esperas.",
+    nextStepText: "Ya sabes guardar y leer valores simples con localStorage. Ahora veamos cómo convertir objetos completos a texto y de vuelta, para poder guardar datos más complejos.",
+    challenge: {
+      description: 'Cambia el valor guardado en localStorage.setItem("tema", "oscuro"); por "claro" y confirma que el mensaje final se actualiza.',
+      code: {
+        html: `<h1>Preferencias</h1>\n<div id="salida"></div>\n`,
+        css: `body {\n  font-family: system-ui, sans-serif;\n  padding: 40px;\n  text-align: center;\n}\n\n#salida {\n  font-weight: 600;\n  color: #7c3aed;\n}\n`,
+        js: `// Este playground no puede usar el localStorage real del navegador por seguridad,\n// así que lo simulamos aquí con los mismos métodos (setItem, getItem, removeItem).\n// En una página normal, no necesitarías escribir esto: localStorage ya existe.\nconst localStorage = {\n  datos: {},\n  setItem(clave, valor) {\n    this.datos[clave] = String(valor);\n  },\n  getItem(clave) {\n    return clave in this.datos ? this.datos[clave] : null;\n  },\n  removeItem(clave) {\n    delete this.datos[clave];\n  },\n};\n\nlocalStorage.setItem("tema", "oscuro"); /* cambia este valor */\nconsole.log(localStorage.getItem("tema"));\n\ndocument.getElementById("salida").textContent = \`Tema guardado: \${localStorage.getItem("tema")}\`;\n`,
+      },
+    },
+  },
+  {
+    slug: "trabajar-con-json",
+    title: "Trabajar con JSON",
+    summary:
+      "JSON es el formato de texto que usan la mayoría de las APIs y que localStorage necesita para guardar datos complejos. JSON.stringify convierte un objeto en texto, y JSON.parse hace lo contrario.",
+    playgroundCode: {
+      html: `<h1>Tarea guardada</h1>\n<p id="salida"></p>\n`,
+      css: `body {\n  font-family: system-ui, sans-serif;\n  padding: 40px;\n  text-align: center;\n}\n\n#salida {\n  font-weight: 600;\n  color: #16a34a;\n}\n`,
+      js: `const tarea = { texto: "Aprender JSON", hecha: false };\n\nconst textoJSON = JSON.stringify(tarea);\nconsole.log(textoJSON);\nconsole.log(typeof textoJSON);\n\nconst tareaRecuperada = JSON.parse(textoJSON);\nconsole.log(tareaRecuperada);\nconsole.log(typeof tareaRecuperada);\n\ndocument.getElementById("salida").textContent = \`Tarea: \${tareaRecuperada.texto}\`;\n`,
+    },
+    hint: "Agrega una propiedad prioridad: \"alta\" al objeto tarea y confirma que también aparece al hacer console.log(tareaRecuperada) después de convertirlo de vuelta.",
+    explanationIntro: "JSON.stringify y JSON.parse convierten datos entre objeto de JavaScript y texto, en direcciones opuestas:",
+    explanationRows: [
+      { code: "JSON.stringify(valor)", desc: "Convierte un objeto o array de JavaScript en un texto (string) con formato JSON, listo para guardar o enviar." },
+      { code: "JSON.parse(texto)", desc: "Convierte un texto con formato JSON de vuelta en un objeto o array de JavaScript real, con sus propiedades accesibles normalmente." },
+      { code: "typeof", desc: "Confirma que el resultado de stringify es un string y el de parse es un objeto, aunque en consola se vean parecidos." },
+      { code: "JSON", desc: "JavaScript Object Notation: el formato de texto que usan la mayoría de las APIs para enviar y recibir datos, y el mismo que localStorage necesita porque solo guarda strings." },
+    ],
+    tip: "JSON.stringify y JSON.parse son la pareja perfecta para guardar objetos completos en localStorage: conviertes el objeto a texto antes de guardarlo con setItem, y lo vuelves a convertir a objeto con parse al leerlo con getItem.",
+    extra: "fetch ya usa esto internamente: respuesta.json() (de la primera lección de este módulo) básicamente lee el texto de la respuesta y le aplica JSON.parse automáticamente por ti.",
+    commonError: 'Guardar un objeto directamente en localStorage sin JSON.stringify, como localStorage.setItem("tarea", tarea): como localStorage solo guarda strings, JavaScript convierte el objeto al texto "[object Object]" en vez de sus datos reales, y la información se pierde.',
+    nextStepText: "Ya sabes pedir datos con fetch, guardarlos en el navegador y convertirlos entre objeto y texto con JSON. En el siguiente módulo vas a juntar todo lo aprendido en un proyecto práctico real.",
+    challenge: {
+      description: 'Agrega una propiedad prioridad: "alta" al objeto tarea y confirma que aparece en tareaRecuperada después de convertirlo a texto y de vuelta.',
+      code: {
+        html: `<h1>Tarea guardada</h1>\n<p id="salida"></p>\n`,
+        css: `body {\n  font-family: system-ui, sans-serif;\n  padding: 40px;\n  text-align: center;\n}\n\n#salida {\n  font-weight: 600;\n  color: #16a34a;\n}\n`,
+        js: `const tarea = {\n  texto: "Aprender JSON",\n  hecha: false,\n  // agrega aquí prioridad: "alta"\n};\n\nconst textoJSON = JSON.stringify(tarea);\nconsole.log(textoJSON);\nconsole.log(typeof textoJSON);\n\nconst tareaRecuperada = JSON.parse(textoJSON);\nconsole.log(tareaRecuperada);\nconsole.log(typeof tareaRecuperada);\n\ndocument.getElementById("salida").textContent = \`Tarea: \${tareaRecuperada.texto}\`;\n`,
+      },
+    },
+  },
+];
+
+const proyectoPracticoLessons: RealLesson[] = [
+  {
+    slug: "planifica-tu-proyecto",
+    title: "Planifica tu proyecto",
+    summary:
+      "Antes de escribir HTML o CSS, planeas el estado de tu app: qué datos necesitas guardar. En una lista de tareas, eso es un array de objetos, y una función render() que dibuja la pantalla a partir de ese array.",
+    playgroundCode: {
+      html: `<h1>Mi lista de tareas</h1>\n<ul id="lista"></ul>\n`,
+      css: `body {\n  font-family: system-ui, sans-serif;\n  padding: 40px;\n  max-width: 320px;\n}\n\n#lista {\n  padding-left: 20px;\n}\n\nli {\n  margin-bottom: 6px;\n}\n\nli.completada {\n  text-decoration: line-through;\n  color: #94a3b8;\n}\n`,
+      js: `const tareas = [\n  { texto: "Aprender HTML", completada: true },\n  { texto: "Aprender CSS", completada: true },\n  { texto: "Aprender JavaScript", completada: false },\n];\n\nfunction render() {\n  const lista = document.getElementById("lista");\n  lista.innerHTML = tareas\n    .map(function (tarea) {\n      const clase = tarea.completada ? "completada" : "";\n      return \`<li class="\${clase}">\${tarea.texto}</li>\`;\n    })\n    .join("");\n}\n\nrender();\n`,
+    },
+    hint: 'Agrega una cuarta tarea al array tareas (con completada: false) y observa que render() la dibuja automáticamente, sin tocar el HTML.',
+    explanationIntro: "Antes de programar la interacción, defines los datos (el estado) y una función que dibuja la pantalla a partir de ellos:",
+    explanationRows: [
+      { code: "el estado (los datos)", desc: "El array tareas es la única fuente de verdad de tu app: nunca escribes HTML a mano para cada tarea, siempre sale de aquí." },
+      { code: "function render()", desc: "Recorre el estado y genera el HTML que se muestra en pantalla. Se vuelve a llamar cada vez que el estado cambia." },
+      { code: "tareas.map(funcion)", desc: "Transforma cada tarea del array en un pedazo de HTML (un string), reutilizando lo aprendido en el módulo de Arreglos." },
+      { code: 'array.join("")', desc: "Une todos los pedazos de HTML generados por map en un solo string, listo para insertarlo con innerHTML." },
+    ],
+    tip: "Planear antes de programar significa decidir primero qué datos necesitas (el array de tareas) y después construir la vista a partir de ellos — nunca al revés.",
+    extra: "Separar \"estado\" (los datos) de \"vista\" (lo que se dibuja) es el mismo patrón que usan frameworks como React o Vue; aquí lo construyes a mano con herramientas que ya conoces: arrays, objetos y el DOM.",
+    commonError: "Modificar el HTML directamente (por ejemplo agregando un <li> a mano en vez de al array tareas): el estado y lo que se ve en pantalla dejan de coincidir, y la próxima vez que se llame a render() se pierde ese cambio.",
+    nextStepText: "Ya tienes la estructura de datos y la función que dibuja la lista. Ahora vamos a construir la lógica para agregar, completar y eliminar tareas.",
+    challenge: {
+      description: "Agrega una cuarta tarea al array tareas (con completada: false) y confirma que aparece automáticamente en la lista.",
+      code: {
+        html: `<h1>Mi lista de tareas</h1>\n<ul id="lista"></ul>\n`,
+        css: `body {\n  font-family: system-ui, sans-serif;\n  padding: 40px;\n  max-width: 320px;\n}\n\n#lista {\n  padding-left: 20px;\n}\n\nli {\n  margin-bottom: 6px;\n}\n\nli.completada {\n  text-decoration: line-through;\n  color: #94a3b8;\n}\n`,
+        js: `const tareas = [\n  { texto: "Aprender HTML", completada: true },\n  { texto: "Aprender CSS", completada: true },\n  { texto: "Aprender JavaScript", completada: false },\n  // agrega aquí una cuarta tarea\n];\n\nfunction render() {\n  const lista = document.getElementById("lista");\n  lista.innerHTML = tareas\n    .map(function (tarea) {\n      const clase = tarea.completada ? "completada" : "";\n      return \`<li class="\${clase}">\${tarea.texto}</li>\`;\n    })\n    .join("");\n}\n\nrender();\n`,
+      },
+    },
+  },
+  {
+    slug: "construye-la-logica",
+    title: "Construye la lógica",
+    summary:
+      "Con el estado y render() ya listos, agregas la lógica que faltaba: un formulario para agregar tareas y delegación de eventos en la lista para marcarlas completadas o eliminarlas.",
+    playgroundCode: {
+      html: `<h1>Mi lista de tareas</h1>\n<div class="agregar">\n  <input type="text" id="entrada" placeholder="Nueva tarea" />\n  <button id="agregar">Agregar</button>\n</div>\n<ul id="lista"></ul>\n`,
+      css: `body {\n  font-family: system-ui, sans-serif;\n  padding: 40px;\n  max-width: 320px;\n}\n\n.agregar {\n  display: flex;\n  gap: 8px;\n  margin-bottom: 16px;\n}\n\ninput {\n  flex: 1;\n  padding: 8px 12px;\n  border-radius: 8px;\n  border: 1px solid #cbd5e1;\n}\n\nbutton {\n  padding: 8px 16px;\n  border: none;\n  border-radius: 8px;\n  background-color: #2563eb;\n  color: white;\n  font-weight: 600;\n  cursor: pointer;\n}\n\n#lista {\n  padding-left: 20px;\n}\n\nli {\n  margin-bottom: 6px;\n  cursor: pointer;\n}\n\nli.completada {\n  text-decoration: line-through;\n  color: #94a3b8;\n}\n\n.eliminar {\n  margin-left: 8px;\n  border: none;\n  background: none;\n  color: #dc2626;\n  cursor: pointer;\n  font-weight: 700;\n  padding: 0 4px;\n}\n`,
+      js: `const tareas = [\n  { texto: "Aprender HTML", completada: true },\n  { texto: "Aprender CSS", completada: true },\n  { texto: "Aprender JavaScript", completada: false },\n];\n\nconst lista = document.getElementById("lista");\nconst entrada = document.getElementById("entrada");\nconst botonAgregar = document.getElementById("agregar");\n\nfunction render() {\n  lista.innerHTML = tareas\n    .map(function (tarea, indice) {\n      const clase = tarea.completada ? "completada" : "";\n      return \`<li class="\${clase}" data-indice="\${indice}">\${tarea.texto}<button class="eliminar" data-indice="\${indice}">x</button></li>\`;\n    })\n    .join("");\n}\n\nbotonAgregar.addEventListener("click", function () {\n  if (entrada.value === "") return;\n  tareas.push({ texto: entrada.value, completada: false });\n  entrada.value = "";\n  render();\n});\n\nlista.addEventListener("click", function (evento) {\n  const indice = Number(evento.target.dataset.indice);\n\n  if (evento.target.classList.contains("eliminar")) {\n    tareas.splice(indice, 1);\n  } else if (evento.target.tagName === "LI") {\n    tareas[indice].completada = !tareas[indice].completada;\n  }\n  render();\n});\n\nrender();\n`,
+    },
+    hint: "Agrega 2 o 3 tareas nuevas escribiendo en el campo de texto, márcalas completadas haciendo clic sobre ellas, y elimina alguna con el botón \"x\".",
+    explanationIntro: "Cada acción (agregar, completar, eliminar) modifica el array tareas y vuelve a llamar a render():",
+    explanationRows: [
+      { code: "elemento.dataset.indice", desc: "Lee el atributo data-indice del HTML como texto. Junto con Number(), te dice a qué posición del array corresponde ese elemento." },
+      { code: "array.push(valor)", desc: "Agrega un nuevo elemento al final del array (ya visto en Arreglos); aquí lo usas para agregar una tarea nueva al escribir y hacer clic en Agregar." },
+      { code: "array.splice(indice, 1)", desc: "Elimina 1 elemento del array a partir de la posición indice, modificando el array original." },
+      { code: "render() después de cada cambio", desc: "Cada vez que tareas cambia (agregar, eliminar, marcar completada), se vuelve a llamar a render() para que la pantalla refleje el nuevo estado." },
+    ],
+    tip: "Fíjate que solo hay un addEventListener en lista (delegación de eventos): no importa cuántas tareas agregues, todos los <li> y botones \"x\" nuevos reaccionan al clic sin código adicional.",
+    extra: "Guardar el índice de cada tarea en un atributo data-* (como data-indice) es una técnica muy común para conectar un elemento del DOM con su dato correspondiente en un array.",
+    commonError: "Usar evento.target.dataset.indice sin convertirlo con Number(): los atributos data-* siempre se leen como texto, así que comparar o usar ese valor como si fuera un número directamente puede no funcionar como esperas.",
+    nextStepText: "Ya tienes una lista de tareas completamente funcional: agregar, completar y eliminar. En el siguiente módulo vas a pulirla e integrarla con persistencia, para que recuerde tus tareas.",
+    challenge: {
+      description: 'Agrega 2 o 3 tareas nuevas, márcalas como completadas haciendo clic, y elimina alguna con el botón "x", todo sin tocar el JavaScript.',
+      code: {
+        html: `<h1>Mi lista de tareas</h1>\n<div class="agregar">\n  <input type="text" id="entrada" placeholder="Nueva tarea" />\n  <button id="agregar">Agregar</button>\n</div>\n<ul id="lista"></ul>\n`,
+        css: `body {\n  font-family: system-ui, sans-serif;\n  padding: 40px;\n  max-width: 320px;\n}\n\n.agregar {\n  display: flex;\n  gap: 8px;\n  margin-bottom: 16px;\n}\n\ninput {\n  flex: 1;\n  padding: 8px 12px;\n  border-radius: 8px;\n  border: 1px solid #cbd5e1;\n}\n\nbutton {\n  padding: 8px 16px;\n  border: none;\n  border-radius: 8px;\n  background-color: #2563eb;\n  color: white;\n  font-weight: 600;\n  cursor: pointer;\n}\n\n#lista {\n  padding-left: 20px;\n}\n\nli {\n  margin-bottom: 6px;\n  cursor: pointer;\n}\n\nli.completada {\n  text-decoration: line-through;\n  color: #94a3b8;\n}\n\n.eliminar {\n  margin-left: 8px;\n  border: none;\n  background: none;\n  color: #dc2626;\n  cursor: pointer;\n  font-weight: 700;\n  padding: 0 4px;\n}\n`,
+        js: `const tareas = [\n  { texto: "Aprender HTML", completada: true },\n  { texto: "Aprender CSS", completada: true },\n  { texto: "Aprender JavaScript", completada: false },\n];\n\nconst lista = document.getElementById("lista");\nconst entrada = document.getElementById("entrada");\nconst botonAgregar = document.getElementById("agregar");\n\nfunction render() {\n  lista.innerHTML = tareas\n    .map(function (tarea, indice) {\n      const clase = tarea.completada ? "completada" : "";\n      return \`<li class="\${clase}" data-indice="\${indice}">\${tarea.texto}<button class="eliminar" data-indice="\${indice}">x</button></li>\`;\n    })\n    .join("");\n}\n\nbotonAgregar.addEventListener("click", function () {\n  if (entrada.value === "") return;\n  tareas.push({ texto: entrada.value, completada: false });\n  entrada.value = "";\n  render();\n});\n\nlista.addEventListener("click", function (evento) {\n  const indice = Number(evento.target.dataset.indice);\n\n  if (evento.target.classList.contains("eliminar")) {\n    tareas.splice(indice, 1);\n  } else if (evento.target.tagName === "LI") {\n    tareas[indice].completada = !tareas[indice].completada;\n  }\n  render();\n});\n\nrender();\n`,
+      },
+    },
+  },
+];
+
+const proyectoFinalLessons: RealLesson[] = [
+  {
+    slug: "integra-html-css-y-js",
+    title: "Integra HTML, CSS y JS",
+    summary:
+      "El toque final: que tu lista de tareas recuerde los datos del usuario. Guardas el array completo con JSON.stringify y localStorage, lo recuperas con JSON.parse al cargar, y agregas un mensaje cuando la lista queda vacía.",
+    playgroundCode: {
+      html: `<h1>Mi lista de tareas</h1>\n<div class="agregar">\n  <input type="text" id="entrada" placeholder="Nueva tarea" />\n  <button id="agregar">Agregar</button>\n</div>\n<ul id="lista"></ul>\n`,
+      css: `body {\n  font-family: system-ui, sans-serif;\n  padding: 40px;\n  max-width: 320px;\n}\n\n.agregar {\n  display: flex;\n  gap: 8px;\n  margin-bottom: 16px;\n}\n\ninput {\n  flex: 1;\n  padding: 8px 12px;\n  border-radius: 8px;\n  border: 1px solid #cbd5e1;\n}\n\nbutton {\n  padding: 8px 16px;\n  border: none;\n  border-radius: 8px;\n  background-color: #2563eb;\n  color: white;\n  font-weight: 600;\n  cursor: pointer;\n}\n\n#lista {\n  padding-left: 20px;\n}\n\nli {\n  margin-bottom: 6px;\n  cursor: pointer;\n}\n\nli.completada {\n  text-decoration: line-through;\n  color: #94a3b8;\n}\n\nli.vacio {\n  list-style: none;\n  margin-left: -20px;\n  color: #16a34a;\n  font-weight: 600;\n}\n\n.eliminar {\n  margin-left: 8px;\n  border: none;\n  background: none;\n  color: #dc2626;\n  cursor: pointer;\n  font-weight: 700;\n  padding: 0 4px;\n}\n`,
+      js: `// Simulamos localStorage igual que en el módulo de APIs y almacenamiento,\n// porque este playground no puede usar el real por seguridad.\nconst localStorage = {\n  datos: {},\n  setItem(clave, valor) {\n    this.datos[clave] = String(valor);\n  },\n  getItem(clave) {\n    return clave in this.datos ? this.datos[clave] : null;\n  },\n};\n\nlet tareas = JSON.parse(localStorage.getItem("tareas")) || [\n  { texto: "Aprender HTML", completada: true },\n  { texto: "Aprender CSS", completada: true },\n  { texto: "Aprender JavaScript", completada: false },\n];\n\nconst lista = document.getElementById("lista");\nconst entrada = document.getElementById("entrada");\nconst botonAgregar = document.getElementById("agregar");\n\nfunction guardar() {\n  localStorage.setItem("tareas", JSON.stringify(tareas));\n}\n\nfunction render() {\n  lista.innerHTML = tareas.length\n    ? tareas\n        .map(function (tarea, indice) {\n          const clase = tarea.completada ? "completada" : "";\n          return \`<li class="\${clase}" data-indice="\${indice}">\${tarea.texto}<button class="eliminar" data-indice="\${indice}">x</button></li>\`;\n        })\n        .join("")\n    : \`<li class="vacio">No tienes tareas pendientes 🎉</li>\`;\n}\n\nbotonAgregar.addEventListener("click", function () {\n  if (entrada.value === "") return;\n  tareas.push({ texto: entrada.value, completada: false });\n  entrada.value = "";\n  guardar();\n  render();\n});\n\nlista.addEventListener("click", function (evento) {\n  const indice = Number(evento.target.dataset.indice);\n\n  if (evento.target.classList.contains("eliminar")) {\n    tareas.splice(indice, 1);\n  } else if (evento.target.tagName === "LI") {\n    tareas[indice].completada = !tareas[indice].completada;\n  }\n  guardar();\n  render();\n});\n\nrender();\n`,
+    },
+    hint: 'Elimina todas las tareas de la lista una por una y confirma que aparece el mensaje "No tienes tareas pendientes 🎉".',
+    explanationIntro: "Guardar y recuperar el estado completo une lo aprendido en Arreglos, Objetos y APIs y almacenamiento:",
+    explanationRows: [
+      { code: "JSON.stringify(tareas)", desc: "Convierte el array completo de tareas a texto antes de guardarlo, porque localStorage solo acepta strings." },
+      { code: 'JSON.parse(localStorage.getItem("tareas"))', desc: "Al cargar, recupera el texto guardado y lo convierte de vuelta en un array real de objetos." },
+      { code: "|| [...]", desc: 'Si no hay nada guardado todavía (getItem devuelve null), JSON.parse(null) da null, y || usa una lista de tareas inicial en su lugar.' },
+      { code: "function guardar()", desc: "Centraliza el paso de convertir y guardar; se llama después de cada cambio (agregar, completar, eliminar) para que lo guardado nunca quede desactualizado." },
+    ],
+    tip: "Cualquier cambio en tareas que no pase por guardar() se perdería la próxima vez que se cargue la página: por eso guardar() se llama al final de cada acción, justo antes de render().",
+    extra: "En este playground seguimos usando la simulación de localStorage (por las restricciones del sandbox), pero en tu propio proyecto, con el localStorage real del navegador, tus tareas persistirían de verdad al recargar la página o volver más tarde.",
+    commonError: "Llamar a render() sin llamar antes a guardar(): la pantalla se actualiza con el cambio, pero nunca se guarda, así que se perdería en cuanto se recargara la página real (fuera de este playground).",
+    nextStepText: "Tu proyecto ya integra HTML, CSS y JavaScript, y guarda los datos del usuario. Ahora toca la última lección del curso: cómo publicar tu proyecto para que cualquiera pueda usarlo.",
+    challenge: {
+      description: 'Elimina todas las tareas de la lista, una por una, y confirma que aparece el mensaje "No tienes tareas pendientes 🎉".',
+      code: {
+        html: `<h1>Mi lista de tareas</h1>\n<div class="agregar">\n  <input type="text" id="entrada" placeholder="Nueva tarea" />\n  <button id="agregar">Agregar</button>\n</div>\n<ul id="lista"></ul>\n`,
+        css: `body {\n  font-family: system-ui, sans-serif;\n  padding: 40px;\n  max-width: 320px;\n}\n\n.agregar {\n  display: flex;\n  gap: 8px;\n  margin-bottom: 16px;\n}\n\ninput {\n  flex: 1;\n  padding: 8px 12px;\n  border-radius: 8px;\n  border: 1px solid #cbd5e1;\n}\n\nbutton {\n  padding: 8px 16px;\n  border: none;\n  border-radius: 8px;\n  background-color: #2563eb;\n  color: white;\n  font-weight: 600;\n  cursor: pointer;\n}\n\n#lista {\n  padding-left: 20px;\n}\n\nli {\n  margin-bottom: 6px;\n  cursor: pointer;\n}\n\nli.completada {\n  text-decoration: line-through;\n  color: #94a3b8;\n}\n\nli.vacio {\n  list-style: none;\n  margin-left: -20px;\n  color: #16a34a;\n  font-weight: 600;\n}\n\n.eliminar {\n  margin-left: 8px;\n  border: none;\n  background: none;\n  color: #dc2626;\n  cursor: pointer;\n  font-weight: 700;\n  padding: 0 4px;\n}\n`,
+        js: `// Simulamos localStorage igual que en el módulo de APIs y almacenamiento,\n// porque este playground no puede usar el real por seguridad.\nconst localStorage = {\n  datos: {},\n  setItem(clave, valor) {\n    this.datos[clave] = String(valor);\n  },\n  getItem(clave) {\n    return clave in this.datos ? this.datos[clave] : null;\n  },\n};\n\nlet tareas = JSON.parse(localStorage.getItem("tareas")) || [\n  { texto: "Aprender HTML", completada: true },\n  { texto: "Aprender CSS", completada: true },\n  { texto: "Aprender JavaScript", completada: false },\n];\n\nconst lista = document.getElementById("lista");\nconst entrada = document.getElementById("entrada");\nconst botonAgregar = document.getElementById("agregar");\n\nfunction guardar() {\n  localStorage.setItem("tareas", JSON.stringify(tareas));\n}\n\nfunction render() {\n  lista.innerHTML = tareas.length\n    ? tareas\n        .map(function (tarea, indice) {\n          const clase = tarea.completada ? "completada" : "";\n          return \`<li class="\${clase}" data-indice="\${indice}">\${tarea.texto}<button class="eliminar" data-indice="\${indice}">x</button></li>\`;\n        })\n        .join("")\n    : \`<li class="vacio">No tienes tareas pendientes 🎉</li>\`;\n}\n\nbotonAgregar.addEventListener("click", function () {\n  if (entrada.value === "") return;\n  tareas.push({ texto: entrada.value, completada: false });\n  entrada.value = "";\n  guardar();\n  render();\n});\n\nlista.addEventListener("click", function (evento) {\n  const indice = Number(evento.target.dataset.indice);\n\n  if (evento.target.classList.contains("eliminar")) {\n    tareas.splice(indice, 1);\n  } else if (evento.target.tagName === "LI") {\n    tareas[indice].completada = !tareas[indice].completada;\n  }\n  guardar();\n  render();\n});\n\nrender();\n`,
+      },
+    },
+  },
+  {
+    slug: "publica-tu-proyecto",
+    title: "Publica tu proyecto",
+    summary:
+      "Tu proyecto ya funciona por completo. Ahora toca sacarlo del editor y publicarlo en internet: qué es un sitio estático, dónde alojarlo gratis, y qué revisar antes de compartirlo con otras personas.",
+    playgroundCode: {
+      html: `<h1>Mi lista de tareas</h1>\n<div class="agregar">\n  <input type="text" id="entrada" placeholder="Nueva tarea" />\n  <button id="agregar">Agregar</button>\n</div>\n<ul id="lista"></ul>\n`,
+      css: `body {\n  font-family: system-ui, sans-serif;\n  padding: 40px;\n  max-width: 320px;\n}\n\n.agregar {\n  display: flex;\n  gap: 8px;\n  margin-bottom: 16px;\n}\n\ninput {\n  flex: 1;\n  padding: 8px 12px;\n  border-radius: 8px;\n  border: 1px solid #cbd5e1;\n}\n\nbutton {\n  padding: 8px 16px;\n  border: none;\n  border-radius: 8px;\n  background-color: #2563eb;\n  color: white;\n  font-weight: 600;\n  cursor: pointer;\n}\n\n#lista {\n  padding-left: 20px;\n}\n\nli {\n  margin-bottom: 6px;\n  cursor: pointer;\n}\n\nli.completada {\n  text-decoration: line-through;\n  color: #94a3b8;\n}\n\nli.vacio {\n  list-style: none;\n  margin-left: -20px;\n  color: #16a34a;\n  font-weight: 600;\n}\n\n.eliminar {\n  margin-left: 8px;\n  border: none;\n  background: none;\n  color: #dc2626;\n  cursor: pointer;\n  font-weight: 700;\n  padding: 0 4px;\n}\n`,
+      js: `// Simulamos localStorage igual que en el módulo de APIs y almacenamiento,\n// porque este playground no puede usar el real por seguridad.\n// En tu propia computadora, no necesitarías escribir esto: usarías el real.\nconst localStorage = {\n  datos: {},\n  setItem(clave, valor) {\n    this.datos[clave] = String(valor);\n  },\n  getItem(clave) {\n    return clave in this.datos ? this.datos[clave] : null;\n  },\n};\n\nlet tareas = JSON.parse(localStorage.getItem("tareas")) || [\n  { texto: "Aprender HTML", completada: true },\n  { texto: "Aprender CSS", completada: true },\n  { texto: "Aprender JavaScript", completada: true },\n  { texto: "Publicar mi proyecto", completada: false },\n];\n\nconst lista = document.getElementById("lista");\nconst entrada = document.getElementById("entrada");\nconst botonAgregar = document.getElementById("agregar");\n\nfunction guardar() {\n  localStorage.setItem("tareas", JSON.stringify(tareas));\n}\n\nfunction render() {\n  lista.innerHTML = tareas.length\n    ? tareas\n        .map(function (tarea, indice) {\n          const clase = tarea.completada ? "completada" : "";\n          return \`<li class="\${clase}" data-indice="\${indice}">\${tarea.texto}<button class="eliminar" data-indice="\${indice}">x</button></li>\`;\n        })\n        .join("")\n    : \`<li class="vacio">No tienes tareas pendientes 🎉</li>\`;\n}\n\nbotonAgregar.addEventListener("click", function () {\n  if (entrada.value === "") return;\n  tareas.push({ texto: entrada.value, completada: false });\n  entrada.value = "";\n  guardar();\n  render();\n});\n\nlista.addEventListener("click", function (evento) {\n  const indice = Number(evento.target.dataset.indice);\n\n  if (evento.target.classList.contains("eliminar")) {\n    tareas.splice(indice, 1);\n  } else if (evento.target.tagName === "LI") {\n    tareas[indice].completada = !tareas[indice].completada;\n  }\n  guardar();\n  render();\n});\n\nrender();\n`,
+    },
+    hint: 'Abre las herramientas de desarrollador (F12) en tu propio navegador y revisa la pestaña "Consola" mientras usas un proyecto: es la forma más rápida de detectar errores antes de publicar.',
+    explanationIntro: "Publicar un proyecto como este no necesita un servidor propio, solo un lugar que sirva tus archivos tal cual:",
+    explanationRows: [
+      { code: "index.html", desc: "El archivo que cualquier servicio de hosting estático busca primero: debe existir en la raíz de tu proyecto para que se muestre al entrar." },
+      { code: "sitio estático", desc: "Un sitio hecho solo con HTML, CSS y JavaScript (sin backend ni base de datos), exactamente lo que construiste en este curso." },
+      { code: "GitHub Pages", desc: "Sirve gratis los archivos de un repositorio de GitHub como sitio web; ideal para proyectos de práctica como este." },
+      { code: "Netlify / Vercel", desc: "Servicios gratuitos que publican tu sitio arrastrando la carpeta del proyecto o conectando tu repositorio, sin configuración de servidor." },
+    ],
+    tip: "Antes de publicar, abre tu proyecto haciendo doble clic en index.html directamente en tu computadora: si funciona igual que en este editor, ya está listo para subirlo a cualquier hosting estático.",
+    extra: "Si algo no funciona igual en producción que en tu computadora, la consola del navegador (clic derecho → Inspeccionar → Consola, o F12) casi siempre te dice exactamente qué línea falló y por qué.",
+    commonError: "Usar rutas absolutas como /imagenes/foto.png (que apuntan a la raíz de tu computadora) en vez de rutas relativas (imagenes/foto.png): funcionan mientras pruebas en tu máquina, pero se rompen al subir el proyecto a un hosting con otra estructura de carpetas.",
+    nextStepText: "¡Felicidades! Completaste el curso de JavaScript de Código Real: aprendiste desde las bases del lenguaje hasta construir y preparar un proyecto real para publicarse. Sigue practicando, construye tus propios proyectos, y comparte lo que hagas.",
+    challenge: {
+      description: "Copia tu código HTML, CSS y JS a tu propia computadora, ábrelo en tu navegador, y confirma que funciona exactamente igual que aquí.",
+      code: {
+        html: `<h1>Mi lista de tareas</h1>\n<div class="agregar">\n  <input type="text" id="entrada" placeholder="Nueva tarea" />\n  <button id="agregar">Agregar</button>\n</div>\n<ul id="lista"></ul>\n`,
+        css: `body {\n  font-family: system-ui, sans-serif;\n  padding: 40px;\n  max-width: 320px;\n}\n\n.agregar {\n  display: flex;\n  gap: 8px;\n  margin-bottom: 16px;\n}\n\ninput {\n  flex: 1;\n  padding: 8px 12px;\n  border-radius: 8px;\n  border: 1px solid #cbd5e1;\n}\n\nbutton {\n  padding: 8px 16px;\n  border: none;\n  border-radius: 8px;\n  background-color: #2563eb;\n  color: white;\n  font-weight: 600;\n  cursor: pointer;\n}\n\n#lista {\n  padding-left: 20px;\n}\n\nli {\n  margin-bottom: 6px;\n  cursor: pointer;\n}\n\nli.completada {\n  text-decoration: line-through;\n  color: #94a3b8;\n}\n\nli.vacio {\n  list-style: none;\n  margin-left: -20px;\n  color: #16a34a;\n  font-weight: 600;\n}\n\n.eliminar {\n  margin-left: 8px;\n  border: none;\n  background: none;\n  color: #dc2626;\n  cursor: pointer;\n  font-weight: 700;\n  padding: 0 4px;\n}\n`,
+        js: `// Simulamos localStorage igual que en el módulo de APIs y almacenamiento,\n// porque este playground no puede usar el real por seguridad.\n// En tu propia computadora, no necesitarías escribir esto: usarías el real.\nconst localStorage = {\n  datos: {},\n  setItem(clave, valor) {\n    this.datos[clave] = String(valor);\n  },\n  getItem(clave) {\n    return clave in this.datos ? this.datos[clave] : null;\n  },\n};\n\nlet tareas = JSON.parse(localStorage.getItem("tareas")) || [\n  { texto: "Aprender HTML", completada: true },\n  { texto: "Aprender CSS", completada: true },\n  { texto: "Aprender JavaScript", completada: true },\n  { texto: "Publicar mi proyecto", completada: false },\n];\n\nconst lista = document.getElementById("lista");\nconst entrada = document.getElementById("entrada");\nconst botonAgregar = document.getElementById("agregar");\n\nfunction guardar() {\n  localStorage.setItem("tareas", JSON.stringify(tareas));\n}\n\nfunction render() {\n  lista.innerHTML = tareas.length\n    ? tareas\n        .map(function (tarea, indice) {\n          const clase = tarea.completada ? "completada" : "";\n          return \`<li class="\${clase}" data-indice="\${indice}">\${tarea.texto}<button class="eliminar" data-indice="\${indice}">x</button></li>\`;\n        })\n        .join("")\n    : \`<li class="vacio">No tienes tareas pendientes 🎉</li>\`;\n}\n\nbotonAgregar.addEventListener("click", function () {\n  if (entrada.value === "") return;\n  tareas.push({ texto: entrada.value, completada: false });\n  entrada.value = "";\n  guardar();\n  render();\n});\n\nlista.addEventListener("click", function (evento) {\n  const indice = Number(evento.target.dataset.indice);\n\n  if (evento.target.classList.contains("eliminar")) {\n    tareas.splice(indice, 1);\n  } else if (evento.target.tagName === "LI") {\n    tareas[indice].completada = !tareas[indice].completada;\n  }\n  guardar();\n  render();\n});\n\nrender();\n`,
+      },
+    },
+  },
+];
+
 export const jsModules: CourseModule[] = [
   {
     slug: "introduccion-a-javascript",
@@ -852,40 +1174,26 @@ export const jsModules: CourseModule[] = [
   {
     slug: "eventos",
     title: "Eventos",
-    hasContent: false,
-    lessons: [
-      { title: "addEventListener" },
-      { title: "Eventos de formulario" },
-      { title: "Delegación de eventos" },
-    ],
+    hasContent: true,
+    lessons: eventosLessons,
   },
   {
     slug: "apis-y-almacenamiento",
     title: "APIs y almacenamiento",
-    hasContent: false,
-    lessons: [
-      { title: "fetch y peticiones" },
-      { title: "localStorage y sessionStorage" },
-      { title: "Trabajar con JSON" },
-    ],
+    hasContent: true,
+    lessons: apisLessons,
   },
   {
     slug: "proyecto-practico",
     title: "Proyecto práctico",
-    hasContent: false,
-    lessons: [
-      { title: "Planifica tu proyecto" },
-      { title: "Construye la lógica" },
-    ],
+    hasContent: true,
+    lessons: proyectoPracticoLessons,
   },
   {
     slug: "proyecto-final",
     title: "Proyecto final",
-    hasContent: false,
-    lessons: [
-      { title: "Integra HTML, CSS y JS" },
-      { title: "Publica tu proyecto" },
-    ],
+    hasContent: true,
+    lessons: proyectoFinalLessons,
   },
 ];
 
