@@ -1,0 +1,8 @@
+{
+  "trailingSlash": false,
+  "redirects": [
+    { "source": "/html", "destination": "/html/introduccion-a-html/mi-primera-pagina-web", "permanent": true },
+    { "source": "/css", "destination": "/css/introduccion-a-css/mi-primer-estilo-css", "permanent": true },
+    { "source": "/js", "destination": "/js/introduccion-a-javascript/que-es-javascript", "permanent": true }
+  ]
+}
